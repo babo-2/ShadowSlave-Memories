@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sunny's memories</title>
+  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="icon" href="data:,">
+  <meta name="google-site-verification" content="MkeefcRBU_Tw7sqT4G-G0O-QwxG1KsKYbzltt_3SdCA" />
+  <meta name="description" content="Sunny’s memories in Shadow Slave by chapter">
+</head>
+<body>
+
+
+  <div class="controls">
+
+
+    <div class="searchControls">
+      <div style="display: flex;">
+        <div class="search-wrap">
+          <input id="searchInput" type="text" placeholder="🔍 Search..." />
+        </div>
+        <div class="dropdown">
+          <button class="dropdown-btn" onclick="toggleDropdown()">
+            Search by ▾
+          </button>
+          <div class="dropdown-menu" id="menu">
+            <label><input checked onchange="renderItems()" type="checkbox" value="name"> name</label>
+            <label><input onchange="renderItems()" type="checkbox" value="rank"> rank</label>
+            <label><input onchange="renderItems()" type="checkbox" value="tier"> tier</label>
+            <label><input onchange="renderItems()" type="checkbox" value="description"> description</label>
+            <label><input onchange="renderItems()" type="checkbox" value="enchantments-name"> enchantments names</label>
+            <label><input onchange="renderItems()" type="checkbox" value="enchantments-description"> enchantments description</label>
+          </div>
+        </div>
+      </div>
+
+    <div class="dropdown-select">
+        <button class="dropdown-select-button">Sort by: <span>Rank</span> ▾</button>
+
+        <div class="dropdown-select-menu">
+            <button data-value="rank">Rank</button>
+            <button data-value="tier">Tier</button>
+            <button data-value="chapter-recv">Chapter Received</button>
+            <button data-value="chapter-changed">Chapter Changed</button>
+            <button data-value="name">Name</button>
+        </div>
+    </div>
+
+      <button id="sortBtn">↓</button>
+    </div>
+
+    <div class="slider-wrap">
+      <label id="chapterLabel" for="chapter">Chapter</label>
+      <div class="controlsChapter">
+        <input type="range" id="chapter" min="0" max="2300" value="0" step="1">
+        <input type="number" id="chapter-input">
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div>
+      <label class="foldBtn">Currently Owned  —————————   <span class="arrow">▼</span></label>
+      <div id="grid_owned" class="grid"></div>
+    </div>
+    <div>
+        <label class="foldBtn">Destroyed  —————————   <span class="arrow">▼</span></label>
+        <div id="grid_destroyed" class="grid"></div>
+    </div>
+    <div>
+        <label class="foldBtn">Given Away  —————————   <span class="arrow">▼</span></label>
+        <div id="grid_given_away" class="grid"></div>
+    </div>
+  </div>
+
+  <button id="settingsBtn">⚙️</button>
+
+  <div id="SettingsOverlay" class="SettingsOverlay">
+    <div class="settingsPanel">
+      <div class="sidebar">
+        <button class="tab active" data-target="color">Color</button>
+        <button class="tab" data-target="glint">glint</button>
+        <button class="tab" data-target="general">general</button>
+      </div>
+
+      <div class="content">
+        <span class="close" id="closeBtn">✖</span>
+
+        <div id="section-color" class="section active">
+          <!--<p style="font-size: 11px;color:#474545">work in progress</p>-->
+          <h2>Color</h2>
+          <label for="colorBy">color by</label>
+          <select onchange="setColorBy('colorBy')" id="colorBy">
+            <option value="rank" selected>rank</option>
+            <option value="tier">tier</option>
+          </select>
+
+          <div id="colorBySection-rank" class="colorBySection active">
+            <div class="field">
+              <label for="colorPicker">Dormant: </label>
+              <input onchange="ApplyBackgroundColors('rank-Dormant', this.value)" type="color" name="colorPicker" value="#7f8c8d">
+            </div>
+            <div class="field">
+              <label for="colorPicker">Awakened: </label>
+              <input onchange="ApplyBackgroundColors('rank-Awakened', this.value)" type="color" name="colorPicker" value="#27ae60">
+            </div>
+            <div class="field">
+              <label for="colorPicker">Ascended: </label>
+              <input onchange="ApplyBackgroundColors('rank-Ascended', this.value)" type="color" name="colorPicker" value="#2980b9">
+            </div>
+            <div class="field">
+              <label for="colorPicker">Transcendent: </label>
+              <input onchange="ApplyBackgroundColors('rank-Transcendent', this.value)" type="color" name="colorPicker" value="#8e44ad">
+            </div>
+            <div class="field">
+              <label for="colorPicker">Supreme: </label>
+              <input onchange="ApplyBackgroundColors('rank-Supreme', this.value)" type="color" name="colorPicker" value="#ff01c8">
+            </div>
+            <div class="field">
+              <label for="colorPicker">Sacred: </label>
+              <input onchange="ApplyBackgroundColors('rank-Sacred', this.value)" type="color" name="colorPicker" value="#0400f3">
+            </div>
+            <div class="field">
+              <label for="colorPicker">Divine: </label>
+              <input onchange="ApplyBackgroundColors('rank-Divine', this.value)" type="color" name="colorPicker" value="#f39c12">
+            </div>
+            <div class="field">
+              <label for="colorPicker">?: </label>
+              <input onchange="ApplyBackgroundColors('rank-?', this.value)" type="color" name="colorPicker" value="#14141480">
+            </div>
+            <button style="margin-top: 5%;" onclick="resetColors('rank')">reset</button>
+            <button onclick="UpdateColors('tier')">Use colors from tier</button>
+          </div>
+          <div id="colorBySection-tier" class="colorBySection">
+            <div class="field">
+              <label for="colorPicker">I: </label>
+              <input onchange="ApplyBackgroundColors('tier-I', this.value)" type="color" name="colorPicker" value="#7f8c8d">
+            </div>
+            <div class="field">
+              <label for="colorPicker">II: </label>
+              <input onchange="ApplyBackgroundColors('tier-II', this.value)" type="color" name="colorPicker" value="#27ae60">
+            </div>
+            <div class="field">
+              <label for="colorPicker">III: </label>
+              <input onchange="ApplyBackgroundColors('tier-III', this.value)" type="color" name="colorPicker" value="#2980b9">
+            </div>
+            <div class="field">
+              <label for="colorPicker">IV: </label>
+              <input onchange="ApplyBackgroundColors('tier-IV', this.value)" type="color" name="colorPicker" value="#8e44ad">
+            </div>
+            <div class="field">
+              <label for="colorPicker">V: </label>
+              <input onchange="ApplyBackgroundColors('tier-V', this.value)" type="color" name="colorPicker" value="#ff01c8">
+            </div>
+            <div class="field">
+              <label for="colorPicker">VI: </label>
+              <input onchange="ApplyBackgroundColors('tier-VI', this.value)" type="color" name="colorPicker" value="#0400f3">
+            </div>
+            <div class="field">
+              <label for="colorPicker">VII: </label>
+              <input onchange="ApplyBackgroundColors('tier-VI', this.value)" type="color" name="colorPicker" value="#f39c12">
+            </div>
+            <div class="field">
+              <label for="colorPicker">?: </label>
+              <input onchange="ApplyBackgroundColors('tier-?', this.value)" type="color" name="colorPicker" value="#14141480">
+            </div>
+            <button style="margin-top: 5%;" onclick="resetColors('tier')">reset</button>
+            <button onclick="UpdateColors('rank')">Use colors from rank</button>
+          </div>
+        </div>
+
+        <div id="section-glint" class="section">
+          <!--<p style="font-size: 11px;color:#474545">work in progress (doesn't work yet)</p>-->
+          <h2>Glint</h2>         
+          <p style="padding: 5px;">Apply Glint for:</p>
+          <div class="glintBySection">
+            <label><input class="glintCheckBox" onchange="toggleGlint('Divine')" type="checkbox" value="Divine"> Divine</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('Sacred')" type="checkbox" value="Sacred"> Sacred</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('Supreme')" type="checkbox" value="Supreme"> Supreme</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('Transcendent')" type="checkbox" value="Transcendent"> Transcendent</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('Ascended')" type="checkbox" value="Ascended"> Ascended</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('Awakened')" type="checkbox" value="Awakened"> Awakened</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('Dormant')" type="checkbox" value="Dormant"> Dormant</label>
+
+            <label><input class="glintCheckBox" onchange="toggleGlint('VII')" type="checkbox" value="VII"> VII</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('VI')" type="checkbox" value="VI"> VI</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('V')" type="checkbox" value="V"> V</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('IV')" type="checkbox" value="IV"> IV</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('III')" type="checkbox" value="III"> III</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('II')" type="checkbox" value="II"> II</label>
+            <label><input class="glintCheckBox" onchange="toggleGlint('I')" type="checkbox" value="I"> I</label>
+          </div>
+        </div>
+
+        <div id="section-general" class="section">
+          <!--<p style="font-size: 11px;color:#474545">work in progress (doesn't work yet)</p>-->
+          <h2>General</h2>
+          <div class="generalSection">
+            <label><input type="checkbox" id="historyToggle" checked> Show memory history</label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="infoPanel"></div>
+
+  <script src="script.js?v=4"></script>
+</body>
+</html>
