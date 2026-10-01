@@ -1,3 +1,12 @@
+/** Detects devices without hover (phones, tablets), where mouse-over interactions don't apply. */
+class InputMode {
+  static #noHover = window.matchMedia("(hover: none)");
+
+  static get isTouch() {
+    return InputMode.#noHover.matches;
+  }
+}
+
 let items = [];
 
 let tiers = {"?": 0, "I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7};
@@ -388,9 +397,16 @@ function createItem(item) {
         <div class="item-tier">${item.tier}</div>
     `;
 
-    div.addEventListener("mousemove", (e) => {if (!isclicked) showPanel(item, e.clientX, e.clientY)});
+    div.addEventListener("mousemove", (e) => {if (!isclicked && !InputMode.isTouch) showPanel(item, e.clientX, e.clientY)});
     div.addEventListener("mouseleave", hidePanel);
     div.addEventListener("click", (event) => {
+        // Touch has no hover state, so a second tap on the open item closes it
+        if (InputMode.isTouch && isclicked && currentlyLocked == item.name) {
+            event.stopPropagation();
+            isclicked = false;
+            hidePanel();
+            return;
+        }
         if (!(isclicked && currentlyLocked!=item.name)){isclicked=!isclicked;}
         currentlyLocked=item.name;
         showPanel(item, event.clientX, event.clientY)
@@ -905,9 +921,23 @@ function getNameHistory(item, currentChapter) {
     return results.sort((a, b) => a.chapter - b.chapter);
 }
 
+function createPanelCloseButton() {
+    const button = document.createElement("button");
+    button.className = "panel-close";
+    button.setAttribute("aria-label", "Close");
+    button.textContent = "✖";
+    button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        isclicked = false;
+        hidePanel();
+    });
+    return button;
+}
+
 function showPanel(item, x, y) {
     panel.style.display = "block";
     panel.innerHTML = "";
+    panel.appendChild(createPanelCloseButton());
 
     let desc = item.description || "—";
     desc = escapeHtml(desc).replace(/\r?\n/g, "</br>");
