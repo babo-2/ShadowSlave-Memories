@@ -1,45 +1,57 @@
-[{ "name": "Silver Bell", "rank": "Dormant", "tier": "I", "type": "Tool", 
+[
+{ "name": "Silver Bell", "rank": "Dormant", "tier": "I", "type": "Tool", 
 "description": "a small memento of a long-lost home, which once brought its owner comfort and joy. Its clear ringing can be heard from miles away.",
-"enchantments": [{"name": "Silver Song", "description": "The ringing of this bell is not overly loud, but can be heard across a vast distance.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 8, "description": "Received","type": "create"},
+"enchantments": [
+    {"name": "Silver Song", "description": "The ringing of this bell is not overly loud, but can be heard across a vast distance.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 8, "description": "Received from killing an old veteran (unknown dormant human).","type": "create"},
     {"chapter": 659, "description": "Tier up [I->II]", "type": "update", "field": "tier", "value": "II"},
-    {"chapter": 659, "description": "Added Enchantment 'Sonorous'", "type": "add", "field": "enchantments", "value": {"name": "Sonorous", "description": "The owner can decide how loud this bell will ring.", "passive": false}}
+    {"chapter": 659, "description": "Added Enchantment 'Sonorous'", "type": "add", "field": "enchantments", "value": {
+        "name": "Sonorous", "description": "The owner can decide how loud this bell will ring.", "passive": false}
+    }
 ]},
 
-{ "name": "Puppeteer's Shroud", "rank": "Awakened", "tier": "V", "description": "A worm of doubt...", "type": "Armor", 
-"enchantments": [{"name": "Enhanced Durability", "passive": true}, {"name": "Doubtless", "description": "Provides the wearer with a small amount of protection against mind attacks.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 15, "description": "Received","type": "create"},
-    {"chapter": 1473, "description": "Added Enchantment 'Blessing of Spirit'", "type": "add", "field": "enchantments", "value": {"name": "Blessing of Spirit", "description": "This Memory enhances one's ability to endure and recover from mental fatigue.", "passive": true}},
+{ "name": "Puppeteer's Shroud", "rank": "Awakened", "tier": "V", "type": "Armor",
+"description": "A worm of doubt...",
+"enchantments": [
+    {"name": "Enhanced Durability", "passive": true}, 
+    {"name": "Doubtless", "description": "Provides the wearer with a small amount of protection against mind attacks.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 15, "description": "Received from an Awakened Tyrant, Mountain King","type": "create"},
+    {"chapter": 1473, "description": "Added Enchantment 'Blessing of Spirit'", "type": "add", "field": "enchantments", "value": {
+        "name": "Blessing of Spirit", "description": "This Memory enhances one's ability to endure and recover from mental fatigue.", "passive": true}
+    },
     {"chapter": 1845, "description": "Given to Rain", "type": "given_away"}
 ]},
  
-{ "name": "Azure Blade", "rank": "Awakened", "tier": "I", "description": "On this forgotten shore, only steel remembers.", "type": "Weapon", 
+{ "name": "Azure Blade", "rank": "Awakened", "tier": "I", 
+"description": "On this forgotten shore, only steel remembers.", "type": "Weapon", 
 "ChangeHistory":  [
-    {"chapter": 33, "description": "Received","type": "create"},
-    {"chapter": 72, "description": "Destroyed","type": "destroy"}
+    {"chapter": 33, "description": "Received from an Awakened Beast, Carapace Scavenger","type": "create"},
+    {"chapter": 72, "description": "Destroyed whilst fighting the Carapace Demon","type": "destroy"}
 ]},
 
-{ "name": "Starlight Legion Armor", "rank": "Awakened", "tier": "II", 
+{ "name": "Starlight Legion Armor", "rank": "Awakened", "tier": "II", "type": "Armor", 
 "description": "Born in the all-consuming darkness, seven valiant heroes made an oath to return light to the cursed land. Time has erased their names and their faces, but the memory of the defiant oath still remains.", 
-"type": "Armor", 
 "ChangeHistory":  [
-    {"chapter": 52, "description": "Received","type": "create"},
+    {"chapter": 52, "description": "Received from an awakened monster, Carapace Centurion","type": "create"},
     {"chapter": 54, "description": "Given To Nepihis","type": "given_away"}
 ]},
 
-{ "name": "Prowling Thorn", "rank": "Awakened", "tier": "II", "type": "Weapon","description": "This flying dagger is as unpredictable and fickle as the affection of a young beauty, but, perhaps, not as deadly.",
-"enchantments": [{"name": "Rose of Betrayal", "description": "The Prowling Thorn is connected to its wielder by an invisible string. This string is strong but mercurial — just like the treacherous bond of sentimental attachment.", "passive": true}], 
-"ChangeHistory":  [
-    {"chapter": 104, "description": "Received","type": "create"},
+{ "name": "Prowling Thorn", "rank": "Awakened", "tier": "II", "type": "Weapon",
+"description": "This flying dagger is as unpredictable and fickle as the affection of a young beauty, but, perhaps, not as deadly.",
+"enchantments": [
+    {"name": "Rose of Betrayal", "description": "The Prowling Thorn is connected to its wielder by an invisible string. This string is strong but mercurial — just like the treacherous bond of sentimental attachment.", "passive": true}
+],"ChangeHistory":  [
+    {"chapter": 104, "description": "Received from defeating a peculiar creature that resembled a monstrous armored porcupine","type": "create"},
     {"chapter": 1026, "description": "Consumed by Onyx Saint","type": "destroy"}
 ]},
 
 { "name": "Ordinary Rock", "rank": "Awakened", "tier": "I", "type": "Tool","description": "Just an ordinary rock.",
-"enchantments": [{"name": "Not Really", "description": "The word is mightier than the sword. The rock is mightier than the word.", "passive": true}], 
-"ChangeHistory":  [
-    {"chapter": 123, "description": "Received","type": "create"},
+"enchantments": [
+    {"name": "Not Really", "description": "The word is mightier than the sword. The rock is mightier than the word.", "passive": true}
+],"ChangeHistory":  [
+    {"chapter": 123, "description": "Received from an Awakened Monster, Rolling Stone","type": "create"},
     {"chapter": 695, "description": "Changed Name","type": "update", "field": "name", "value": "Extraordinary Rock"},
     {"chapter": 695, "description": "Tier up [I->II]","type": "update", "field": "tier", "value": "II"},
     {"chapter": 695, "description": "Added an Enchantment","type": "add", "field": "enchantments", "value": {"name": "Unknown", "description": "can turn thoughts into sound", "passive": false}},
@@ -47,22 +59,26 @@
 ]},
 
 
-{ "name": "Midnight Shard", "rank": "Awakened", "tier": "III", "type": "Weapon", "description": "Forged from the shard of a fallen star, this stalwart blade is firm and unyielding. It favors those who are willing to fight to the last drop of blood and knows no surrender.",
-"enchantments": [{"name": "Unbroken", "description": "This blade refuses to be broken, and thus is durable beyond reason. It will greatly enhance the power of its wielder when they are close to death, however only if the wielder is unwilling to surrender.", "passive": true}],
-"ChangeHistory":  [
-    {"chapter": 74, "description": "Received From Nepjis","type": "create"},
+{ "name": "Midnight Shard", "rank": "Awakened", "tier": "III", "type": "Weapon",
+"description": "Forged from the shard of a fallen star, this stalwart blade is firm and unyielding. It favors those who are willing to fight to the last drop of blood and knows no surrender.",
+"enchantments": [
+    {"name": "Unbroken", "description": "This blade refuses to be broken, and thus is durable beyond reason. It will greatly enhance the power of its wielder when they are close to death, however only if the wielder is unwilling to surrender.", "passive": true}
+],"ChangeHistory":  [
+    {"chapter": 74, "description": "Received From Nephis","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier","type": "destroy"}
 ]},
 
-{ "name": "Endless Spring", "rank": "Dormant", "tier": "IV", "description": "A lovesick devil had once imprisoned a mighty river in this fragile glass bottle. It was his gift to a beautiful desert spirit.", "type": "tool", 
-"enchantments": [{"name": "Gift of Water", "description": "This bottle contains enough water to make flowers bloom in the desolate heart of the most lifeless of deserts", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 164, "description": "Received","type": "create"},
+{ "name": "Endless Spring", "rank": "Dormant", "tier": "IV", 
+"description": "A lovesick devil had once imprisoned a mighty river in this fragile glass bottle. It was his gift to a beautiful desert spirit.", "type": "tool", 
+"enchantments": [
+    {"name": "Gift of Water", "description": "This bottle contains enough water to make flowers bloom in the desolate heart of the most lifeless of deserts", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 164, "description": "Received From Cassie","type": "create"},
     {"chapter": 1473, "description": "Added Enchantment 'Blessing of Flesh'", "type": "add", "field": "enchantments", "value": {"name": "Blessing of Flesh", "description": "This Memory enhances one's ability to endure and recover from physical fatigue.", "passive": true}}
 ]},
 
-{ "name": "M... Un...old", "rank": "?", "tier": "?", "description": "...Pr... ...first ...army ...shed ...own...", "type": "unknown", 
-"enchantments": [{}],
+{ "name": "M... Un...old", "rank": "?", "tier": "?", "type": "unknown", 
+"description": "...Pr... ...first ...army ...shed ...own...",
 "ChangeHistory": [
     {"chapter": 174, "description": "Received - Bought from Memory Market for seven soul shards.","type": ""},
     {"chapter": 182, "description": "Revealed","type": "create"},
@@ -90,78 +106,82 @@
     {"chapter": 870, "description": "Update on Vanquished Foes [4555/6000]","type": "update", "field": "enchantments", "where": {"name": "Prince of the Underworld"}, "value": {"description": "This armor grows stronger according to the amount of opponents its wielder defeats.\nVanquished Foes: [4555/6000]"}},
     {"chapter": 922, "description": "Update on Vanquished Foes [5523/6000]","type": "update", "field": "enchantments", "where": {"name": "Prince of the Underworld"}, "value": {"description": "This armor grows stronger according to the amount of opponents its wielder defeats.\nVanquished Foes: [5523/6000]"}},
     {"chapter": 972, "description": "Update on Vanquished Foes [6000/6000]","type": "update", "field": "enchantments", "where": {"name": "Prince of the Underworld"}, "value": {"description": "This armor grows stronger according to the amount of opponents its wielder defeats.\nVanquished Foes: [6000/6000]"}},
-
     {"chapter": 972, "description": "Tier up [VI->VII]","type": "update", "field": "tier", "value": "VII"},
     {"chapter": 972, "description": "Added Option to Soulbound the Memory","type": "add", "field": "enchantments", "value": {"name": "Soulbound Relic", "description": "Bind the relic?", "passive": false}},
     {"chapter": 974, "description": "Binded the Relic","type": "destroy"}
 ]
 },
 
-{ "name": "Blood Arrow", "rank": "Ascended", "tier": "I", "description": "A debt of blood must be paid in blood.", "type": "Weapon", 
+{ "name": "Blood Arrow", "rank": "Ascended", "tier": "I", 
+"description": "A debt of blood must be paid in blood.", "type": "Weapon", 
 "enchantments": [
     {"name": "Rain of Blood", "description": "The arrows are created from the wielder's blood, and as such, can rain on the enemies for as long as the archer has any left in their veins.", "passive": true},
-    {"name": "Restitution", "description": "If the arrow finds its mark, it will drink the blood of the prey and restore that which had been taken from the archer. If it misses, the archer's blood will be lost forever.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 203, "description": "Received","type": "create"},
+    {"name": "Restitution", "description": "If the arrow finds its mark, it will drink the blood of the prey and restore that which had been taken from the archer. If it misses, the archer's blood will be lost forever.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 203, "description": "Received from a Fallen Beast, Corpse Eater","type": "create"},
     {"chapter": 209, "description": "Given to kai", "type": "given_away"}
 ]},
 
 
-{ "name": "Blood Blossom", "rank": "Awakened", "tier": "II", "type": "Charm", "description": "No matter how much blood was spilled, her hunger only grew.", 
-"enchantments": [{"name": "Flower of Evil.", "description": "This beautiful Charm imbues all Memories, Echoes, and Shadows of its wielder with an unquenching thirst for blood. They receive an overall enhancement when used against a bleeding foe, and grow more powerful the more their prey bleeds", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 242, "description": "Received","type": "create"},
+{ "name": "Blood Blossom", "rank": "Awakened", "tier": "II", "type": "Charm", 
+"description": "No matter how much blood was spilled, her hunger only grew.", 
+"enchantments": [
+    {"name": "Flower of Evil.", "description": "This beautiful Charm imbues all Memories, Echoes, and Shadows of its wielder with an unquenching thirst for blood. They receive an overall enhancement when used against a bleeding foe, and grow more powerful the more their prey bleeds", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 242, "description": "Received from an awakened monster, Blood Flower","type": "create"},
     {"chapter": 844, "description": "Given to Belle", "type": "given_away"}
 ]},
 
-{ "name": "Dark Wing", "rank": "Awakened", "tier": "I", "type": "Garment", "description": "This cloak is as light as a dragonfly's wing… and as durable.", 
-"enchantments": [{"name": "Glide", "description": "Allows one to levitate slightly above the ground and slowly move in any direction, or glide down softly from any height.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 242, "description": "Received","type": "create"},
+{ "name": "Dark Wing", "rank": "Awakened", "tier": "I", "type": "Garment", 
+"description": "This cloak is as light as a dragonfly's wing… and as durable.", 
+"enchantments": [
+    {"name": "Glide", "description": "Allows one to levitate slightly above the ground and slowly move in any direction, or glide down softly from any height.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 242, "description": "Received from an awakened beast, Flesh Reaver","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
 
-
-{ "name": "Dusk Shard", "rank": "Ascended", "tier": "II", "type": "Weapon", "description": "Forged from a shard of a fallen star, this shield contains the weight of the heavens. Depending on the heart of its wielder, it can be light as a feather or heavy as regret.", 
-"enchantments": [{"name": "Indomitable", "description": "Following the will of its master, the Dusk Shard can change its weight.", "passive": false}],
-"ChangeHistory": [
-    {"chapter": 261, "description": "Received","type": "create"},
-    {"chapter": 262, "description": "Given to Effie", "type": "given_away"}
+{ "name": "Dusk Shard", "rank": "Ascended", "tier": "II", "type": "Weapon", 
+"description": "Forged from a shard of a fallen star, this shield contains the weight of the heavens. Depending on the heart of its wielder, it can be light as a feather or heavy as regret.", 
+"enchantments": [
+    {"name": "Indomitable", "description": "Following the will of its master, the Dusk Shard can change its weight.", "passive": false}
+    ],"ChangeHistory": [
+    {"chapter": 261, "description": "Received from a Fallen Monster, Cursed Herald","type": "create"},
+    {"chapter": 262, "description": "Given to Effie - traded for the Moonlight Shard", "type": "given_away"}
 ]},
 
-{ "name": "Moonlight Shard", "rank": "Ascended", "tier": "I", "type": "Weapon", "description": "When the stars were extinguished and fell, a lonely moon remained in the empty sky. With no sun to shine upon it, the moon grew dim, withered, and died. As the last remnants of moonlight were devoured by darkness, one small shard was forged into this subtle blade.", 
-"enchantments": [{"name": "Unseen", "description": "Forged from moonlight, this blade appears in the hand of its wielder without delay.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 261, "description": "Received","type": "create"},
+{ "name": "Moonlight Shard", "rank": "Ascended", "tier": "I", "type": "Weapon", 
+"description": "When the stars were extinguished and fell, a lonely moon remained in the empty sky. With no sun to shine upon it, the moon grew dim, withered, and died. As the last remnants of moonlight were devoured by darkness, one small shard was forged into this subtle blade.", 
+"enchantments": [
+    {"name": "Unseen", "description": "Forged from moonlight, this blade appears in the hand of its wielder without delay.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 261, "description": "Received from Nephis - traded for the Dusk Shard","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
-{ "name": "Moonlight Shard", "rank": "Ascended", "tier": "I", "type": "Weapon", "description": "When the stars were extinguished and fell, a lonely moon remained in the empty sky. With no sun to shine upon it, the moon grew dim, withered, and died. As the last remnants of moonlight were devoured by darkness, one small shard was forged into this subtle blade.", 
-"enchantments": [{"name": "Unseen", "description": "Forged from moonlight, this blade appears in the hand of its wielder without delay.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 262, "description": "Received","type": "create"},
-    {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
+{ "name": "Weaver's Mask", "rank": "Divine", "tier": "VII", "type": "Tool", 
+"description": "Weaver believed that knowledge was the origin of power and so always hid behind numerous lies, wearing them as a mantle. No one knew Weaver's thoughts, Weaver's face, and Weaver's heart. Even the gods could not see what hid behind the mask.", 
+"enchantments": [
+    {"name": "Mantle of Lies", "description": "Hides the identity of its master.", "passive": true},
+    {"name": "???"}, 
+    {"name": "Simple Trick", "description": "Reverses the effect of one's Flaw.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 262, "description": "Found on a corpse","type": "create"},
+    {"chapter": 456, "description": "Revealed '???' enchantment", "type": "update", "field": "enchantments", "where": {"name": "???"}, "value": {"name": "Where is my eye?", "description": "Helps the wielder peer into the tapestry of Fate.", "passive": false}}
 ]},
 
-{ "name": "Weaver's Mask", "rank": "Divine", "tier": "VII", "type": "Tool", "description": "Weaver believed that knowledge was the origin of power and so always hid behind numerous lies, wearing them as a mantle. No one knew Weaver's thoughts, Weaver's face, and Weaver's heart. Even the gods could not see what hid behind the mask.", 
-"enchantments": [{"name": "Mantle of Lies", "description": "Hides the identity of its master.", "passive": true},
-{"name": "???"}, {"name": "Simple Trick", "description": "Reverses the effect of one's Flaw.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 262, "description": "Received","type": "create"},
-    {"chapter": 456, "description": "Revealed '???' enchantments", "type": "update", "field": "enchantments", "where": {"name": "???"}, "value": {"name": "Where is my eye?", "description": "Helps the wielder peer into the tapestry of Fate.", "passive": false}}
-]},
-
-{ "name": "Broken Oath", "rank": "Awakened", "tier": "I", "type": "Charm", "description": "They made a terrible oath to destroy the curse, or be consumed by it. Those who have broken the oath were consumed by the curse, and those consumed by the curse have broken their oath. In the end, none could escape their promise.", 
-"enchantments": [{"name": "Oathbreaker", "description": "The Broken Oath erodes souls of all those who approach it.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 376, "description": "Received","type": "create"},
+{ "name": "Broken Oath", "rank": "Awakened", "tier": "I", "type": "Charm", 
+"description": "They made a terrible oath to destroy the curse, or be consumed by it. Those who have broken the oath were consumed by the curse, and those consumed by the curse have broken their oath. In the end, none could escape their promise.", 
+"enchantments": [
+    {"name": "Oathbreaker", "description": "The Broken Oath erodes souls of all those who approach it.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 376, "description": "Received from the Lord golem","type": "create"},
     {"chapter": 1026, "description": "Consumed by Onyx Saint","type": "destroy"}
 ]},
 
 
 { "name": "Unnamed Bow", "rank": "Ascended", "tier": "I", "type": "Weapon", 
-"enchantments": [{}],
 "ChangeHistory": [
     {"chapter": 379, "description": "Mentioned","type": "create"},
     {"chapter": 550, "description": "Named","type": "update", "field": "name", "value": "Blackhorn Bow"},
@@ -169,16 +189,17 @@
 ]},
 
 { "name": "Unnamed Quiver", "rank": "Ascended", "tier": "I", "type": "", 
-"enchantments": [{}],
 "ChangeHistory": [
     {"chapter": 438, "description": "Mentioned","type": "create"},
     {"chapter": 550, "description": "Named","type": "update", "field": "name", "value": "Full Quiver"},
     {"chapter": 557, "description": "Given to Kai","type": "given_away"}
 ]},
 
-{ "name": "?", "rank": "?", "tier": "?", "type": "?","description": "Memory that allows changing the hair color at will.", 
-"enchantments": [{"name": "unknown", "description": "allows changing you hair color", "passive": false}],
-"ChangeHistory": [
+{ "name": "?", "rank": "?", "tier": "?", "type": "?",
+"description": "Memory that allows changing the hair color at will.", 
+"enchantments": [
+    {"name": "unknown", "description": "allows changing you hair color", "passive": false}
+],"ChangeHistory": [
     {"chapter": 388, "description": "Mentioned","type": "create"},
     {"chapter": 392, "description": "Named","type": "update", "field": "name", "value": "Autumn Leaf"},
     {"chapter": 392, "description": "Named","type": "update", "field": "type", "value": "Charm"},
@@ -192,35 +213,37 @@
     {"name": "Light Eater", "description": "The blade of this Weapon can reflect, absorb, and expel light.", "passive": false}, 
     {"name": "Ghost Blade", "description": "This Weapon can strike at incorporeal targets.", "passive": true},
     {"name": "Dark Mirror", "description": "Each attack of this Weapon can be augmented with elemental damage. It can be charged with any element the wielder has been damaged by.", "passive": false}
-],
-"ChangeHistory": [
-    {"chapter": 415, "description": "Received","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 415, "description": "Received from an ascended reflection, Mirror Beast","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
-{ "name": "Covetous Coffer", "rank": "Ascended", "tier": "IV", "type": "Tool","description": "\"You are very strange!\" said Noctis. Why was his new friend so deathly afraid of chests? Why was he so timid and pale? \"Don't be afraid, these are just my treasure chests. They won't bite. Well... except for this one. This one will eat you alive.\"", 
+{ "name": "Covetous Coffer", "rank": "Ascended", "tier": "IV", "type": "Tool",
+"description": "\"You are very strange!\" said Noctis. Why was his new friend so deathly afraid of chests? Why was he so timid and pale? \"Don't be afraid, these are just my treasure chests. They won't bite. Well... except for this one. This one will eat you alive.\"", 
 "enchantments": [
     {"name": "Mendacious Coffer", "description": "This Memory can mimic the form of any inanimate object. The size and intricacy of the simulacrum are dependent on the wielder's Soul Core capacity.", "passive": true},
     {"name": "Capacious Chest", "description": "This Memory is bigger on the inside. It can be summoned and dismissed while storing inanimate items. The size of the storage space, as well as the maximum weight of stored items, are dependent on the wielder's Soul Core capacity.", "passive": true},
     {"name": "Locomotive Chiffonier", "description": "This Memory can move around and follow its wielder.", "passive": true},
     {"name": "Lurid Trunk", "description": "This Memory will protect itself against potential thieves. By eating them.", "passive": true}
-],
-"ChangeHistory": [
-    {"chapter": 428, "description": "Received","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 428, "description": "Received from a Fallen Devil, Mordant Mimic","type": "create"},
     {"chapter": 1592, "description": "Modified into an shadow","type": "destroy"}
 ]},
 
-{ "name": "Heavenly Burden", "rank": "Awakened", "tier": "III", "type": "Tool", "description": "To be free of a burden, one has to let go of all attachments they hold in their heart. Only those who untethered themselves from everything can become truly free.",
-"enchantments": [{"name": "Unburdened", "description": "Those pierced with this needle will rise to the skies.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 512, "description": "Revealed","type": "create"},
+{ "name": "Heavenly Burden", "rank": "Awakened", "tier": "III", "type": "Tool",
+"description": "To be free of a burden, one has to let go of all attachments they hold in their heart. Only those who untethered themselves from everything can become truly free.",
+"enchantments": [
+    {"name": "Unburdened", "description": "Those pierced with this needle will rise to the skies.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 512, "description": "Received from the government with contribution points","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
-{ "name": "Memory of Fire", "rank": "Ascended", "tier": "I", "type": "Charm", "description": "...And then, there was nothing but flame.",
+{ "name": "Memory of Fire", "rank": "Ascended", "tier": "I", "type": "Charm", 
+"description": "...And then, there was nothing but flame.",
 "enchantments": [{"name": "Scorching Heat.", "description": "This Charm provides the wearer with moderate resistance to fire.", "passive": true}],
 "ChangeHistory": [
-    {"chapter": 512, "description": "Revealed","type": "create"},
+    {"chapter": 512, "description": "Received from the government with contribution points","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
@@ -230,49 +253,49 @@
     {"name": "Chains of Longing", "description": "This armor provides the wearer with high protection against mind attacks.", "passive": true},
     {"name": "Brilliant Will", "description": "This armor becomes stronger when worn by those of divinity.", "passive": true},
     {"name": "Undying", "description": "The wearer can not die.", "passive": false}
-],
-"ChangeHistory": [
-    {"chapter": 521, "description": "Received","type": "create"},
-    {"chapter": 955 , "description": "Destroyed by Goliath ","type": "destroy"}
+],"ChangeHistory": [
+    {"chapter": 521, "description": "Received from Corrupted Monster — Wormvine, and Transcendent human — Solvane.","type": "create"},
+    {"chapter": 955 , "description": "Destroyed by Goliath","type": "destroy"}
 ]},
 
-{ "name": "Memory of Ice", "rank": "Ascended", "tier": "I", "type": "Charm", "description": "...Even when the sun returned, they shivered and remembered the neverending winter.",
-"enchantments": [{"name": "Bitter Cold.", "description": "This Charm provides the wearer with moderate resistance to cold.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 540, "description": "Revealed","type": "create"},
+{ "name": "Memory of Ice", "rank": "Ascended", "tier": "I", "type": "Charm", 
+"description": "...Even when the sun returned, they shivered and remembered the neverending winter.",
+"enchantments": [
+    {"name": "Bitter Cold.", "description": "This Charm provides the wearer with moderate resistance to cold.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 540, "description": "Received from Dream Tournament Challenger 'What? No, wait!'","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
-
-{ "name": "Patient Avenger", "rank": "Ascended", "tier": "III", "type": "Weapon", "description": "Aflame with hatred, she waited and watched. When the time came, her vengeance was colder than ice",
+{ "name": "Patient Avenger", "rank": "Ascended", "tier": "III", "type": "Weapon", 
+"description": "Aflame with hatred, she waited and watched. When the time came, her vengeance was colder than ice",
 "enchantments": [
     {"name": "Tenacious", "description": "This shield is especially durable.", "passive": true},
     {"name": "Burning Heart", "description": "This shield can store a portion of fire damage it receives to augment another Weapon of its wielder or unleash a devastating shockwave.", "passive": true},
     {"name": "Cold Steel", "description": "This shield can store a portion of impact damage it receives to augment another Weapon of its wielder or unleash an immolating wave of fire.", "passive": false}
-],
-"ChangeHistory": [
-    {"chapter": 550, "description": "Received","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 550, "description": "Received as a reward from Dream Tournament","type": "create"},
     {"chapter": 844, "description": "Given to Quentin", "type": "given_away"}
 ]},
 
-{ "name": "Strike of Thunder", "rank": "Ascended", "tier": "II", "type": "Weapon", "description": "A powerful spirit was once trapped in a glass bottle for a thousand years. This lightning is a manifestation of his rage.",
+{ "name": "Strike of Thunder", "rank": "Ascended", "tier": "II", "type": "Weapon", 
+"description": "A powerful spirit was once trapped in a glass bottle for a thousand years. This lightning is a manifestation of his rage.",
 "enchantments": [
     {"name": "Caged Lightning", "description": "This arrow strikes as fast as a bolt of lightning, and chains its devastating damage to several nearby creatures.", "passive": true}
-],
-"ChangeHistory": [
-    {"chapter": 550, "description": "Received","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 550, "description": "Received as a reward from Dream Tournament","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
-{ "name": "Morgan's Warbow", "rank": "Ascended", "tier": "IV", "type": "Weapon", "description": "Death is worth living for. Love is worth waiting for.",
+{ "name": "Morgan's Warbow", "rank": "Ascended", "tier": "IV", "type": "Weapon", 
+"description": "Death is worth living for. Love is worth waiting for.",
 "enchantments": [
     {"name": "Soul Arrows", "description": "This bow attunes to the soul of its wielder and is capable of creating arrows that share its affinity.", "passive": true},
     {"name": "Unbending", "description": "This adamantine bow demands a giant's might to be bent. Because of that, arrows shot from it travel as far as the eye can see, and strike with terrible strength, piercing both armor and flesh.", "passive": true},
     {"name": "Burden of Peace", "description": "After soul arrows pierce the flesh of an enemy, their weight can be drastically increased.", "passive": false},
     {"name": "Death Dealer", "description": "This bow is able to consume a large amount of essence to deliver an obliterating strike.", "passive": false}
-],
-"ChangeHistory": [
-    {"chapter": 550, "description": "Received","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 550, "description": "Received as a reward for fighting Morgan","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
@@ -281,9 +304,8 @@
     {"name": "Sonorous", "description": "This allowed the flute to sing at various volumes. This was the enchantment Sunny had copied to the Silver Bell and the Ordinary Rock.", "passive": false},
     {"name": "Silenced", "description": "This allowed the flute to create a dome of silence around itself.", "passive": false},
     {"name": "Sepulcher Song", "description": "It can raise the dead and to activate it, one has to know how to actually play the flute. Additionally, the risen corpses would be murderous, wicked, and uncontrolled. The only way to command them and prevent them from attacking the summoner was to soothe them with a correct melody.", "passive": false}
-],
-"ChangeHistory": [
-    {"chapter": 853, "description": "Revealed","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 853, "description": "Received from fighting in the Red Colosseum","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
@@ -291,48 +313,51 @@
 "description": "\"Death is just the shadow of life,\" said the Goddess of Life. \"And peace is just the failure of war. Have you ever been something that had not been stolen, made empty, and vile? Have you ever done something that was not futile and hollow? Can you even exist without being cast by another? Look at how weak you are, how small you are. Am I supposed to be frightened of a small shadow?\"\n\nMade pale and feeble by the radiance of day, Shadow laughed and rose from the ground. As he did, his figure swallowed the land, devoured the heavens, and blotted out the light of the sun. Soon, there was nothing left around them but darkness. And from that darkness, a hiss came, making Life tremble:\n\n\"Life is just the prelude to death, and war is just the key to open its gates. Everything you cherish, everything you nurture, everything that starts with you will one day be mine, be welcomed by me, swallowed by me, and find peace within me. This is the mercy of Shadow. Hollow… futile... you might have come first, my sister, but when your cruelty ends… I will be all that remains…\"",
 "enchantments": [
     {"name": "Gates of Shadow", "description": "This lantern devours light and can contain, and then release, an infinite amount of shadows.", "passive": false}
-],
-"ChangeHistory": [
-    {"chapter": 654, "description": "Received","type": "create"}
+],"ChangeHistory": [
+    {"chapter": 654, "description": "Received from Third Mastery of Aspect Legacy: Shadow Dance","type": "create"}
 ]},
 
-{ "name": "???", "rank": "Awakened", "tier": "I", "description": "This chair was turned into a Memory by Lost from Light... for reasons unknown",
+{ "name": "???", "rank": "Awakened", "tier": "I", 
+"description": "This chair was turned into a Memory by Lost from Light... for reasons unknown",
 "ChangeHistory": [
-    {"chapter": 696, "description": "Received","type": "create"},
+    {"chapter": 696, "description": "Turned a chair into an memory","type": "create"},
     {"chapter": 848, "description": "Named","type": "update", "field": "name", "value": "Shadow Chair"}
 ]},
 
-{ "name": "Dying Wish", "rank": "Transcendent", "tier": "I", "type": "Charm", "description": "A young woman once wished to be free, but could only find her freedom in death. She called upon it, and touched by her sincerity, death came. But instead of embracing it herself, the young woman delivered death to those who held her in chains.",
+{ "name": "Dying Wish", "rank": "Transcendent", "tier": "I", "type": "Charm", 
+"description": "A young woman once wished to be free, but could only find her freedom in death. She called upon it, and touched by her sincerity, death came. But instead of embracing it herself, the young woman delivered death to those who held her in chains.",
 "enchantments": [
     {"name": "Death Wish", "description": "Those who witness the wielder of this Memory are compelled; friends to be inspired, foes to seek the wielder out. The power of the Memory grows the more enemies they give the gift of death, and can be consumed to heal the wielder's wounds.", "passive": true}
-],
-"ChangeHistory": [
-    {"chapter": 730, "description": "Received","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 730, "description": "Received from Transcendent human — Solvane","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
-{ "name": "Overpriced Saddle", "rank": "?", "tier": "?", "description": "After paying a ridiculous amount for this Memory, Sunny vowed to never be robbed blind again and learned how to handle leather himself. The name of the Memory is an expression of his deep, inconsolable anguish.",
-"ChangeHistory": [{"chapter": 848, "description": "Revealed","type": "create"}]},
-
-{ "name": "Evil Eye", "rank": "Ascended", "tier": "IV", "description": "A young woman once wished to be free, but could only find her freedom in death. She called upon it, and touched by her sincerity, death came. But instead of embracing it herself, the young woman delivered death to those who held her in chains.",
-"enchantments": [
-    {"name": "Death Wish", "description": "Those who witness the wielder of this Memory are compelled; friends to be inspired, foes to seek the wielder out. The power of the Memory grows the more enemies they give the gift of death, and can be consumed to heal the wielder's wounds.", "passive": true}
-],
+{ "name": "Overpriced Saddle", "rank": "?", "tier": "?", 
+"description": "After paying a ridiculous amount for this Memory, Sunny vowed to never be robbed blind again and learned how to handle leather himself. The name of the Memory is an expression of his deep, inconsolable anguish.",
 "ChangeHistory": [
-    {"chapter": 848, "description": "Received","type": "create"},
+    {"chapter": 848, "description": "Revealed - bought from an exclusive leather work boutique","type": "create"}
+]},
+
+{ "name": "Evil Eye", "rank": "Ascended", "tier": "IV", 
+"description": "A young woman once wished to be free, but could only find her freedom in death. She called upon it, and touched by her sincerity, death came. But instead of embracing it herself, the young woman delivered death to those who held her in chains.",
+"enchantments": [
+    {"name": "Death Wish", "description": "unknown - capable of enhancing one's vision, making a person capable of discerning more details, and seeing things clearly from a greater distance.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 848, "description": "Received from Fallen Devil, Defiled Witness","type": "create"},
     {"chapter": 926, "description": "Given to Kim", "type": "given_away"}
 ]},
 
-{ "name": "Sin of Solace", "rank": "Transcendent", "tier": "V", "type": "Weapon", "description": "This blade is a whisper of Ariel, the Demon of Dread, who turned a beautiful monster into a queen and gave her a sinister gift of forbidden knowledge.",
+{ "name": "Sin of Solace", "rank": "Transcendent", "tier": "V", "type": "Weapon",
+"description": "This blade is a whisper of Ariel, the Demon of Dread, who turned a beautiful monster into a queen and gave her a sinister gift of forbidden knowledge.",
 "enchantments": [
     {"name": "Sinister Whisper", "description": "This blade can deal both physical damage and mental damage to those that it cuts, destroying not only their bodies, but also their minds. The mental damage persists like a curse, even after a single cut.", "passive": true},
     {"name": "Perfect Jade", "description": "This blade is carved from a piece of sublime jade, and as such is sharp and durable beyond logic and reason.", "passive": true},
     {"name": "Omen of Dread", "description": "A faint remnant of Ariel's presence lingers on this blade, striking terror into the hearts of all beings.", "passive": true},
     {"name": "Hideous Truth", "description": "The more the wielder's sanity is shattered, the more powerful this blade becomes. It bestows revelations of madness on those who give in to its will.", "passive": true},
     {"name": "Cursed", "description": "This blade slowly drives its wielder mad.", "passive": true}
-],
-"ChangeHistory": [
-    {"chapter": 848, "description": "Received","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 848, "description": "Received from Corrupted Tyrant, Remnant of the Jade Queen","type": "create"},
     {"chapter": 1576, "description": "Consumed by Onyx Saint", "type": "destroy"}
 ]},
 
@@ -341,18 +366,17 @@
 "enchantments": [
     {"name": "Echoing Silence", "description": "When wearing this charm, the physical power of its master is augmented... but only as long as they remain silent. The longer their silence lasts, uninterrupted, the greater the boon of power they'll receive.", "passive": true},
     {"name": "Word of Power", "description": "A word spoken by the master of this charm is a command. If born of great silence, the word of power can hardly be ignored. If not, it has no worth.", "passive": true}
-],
-"ChangeHistory": [
-    {"chapter": 848, "description": "Received","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 848, "description": "Received from Corrupted Demon, Voiceless Prelate","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
 { "name": "Bitter Cusp", "rank": "Ascended", "tier": "I", "type": "Tool", 
 "description": "They entered the beautiful halls of the Jade Court harboring venomous desires in their black hearts, and hiding rapacious snarls behind their admiring smiles. The mistress of the palace herself presented them with a cup of the sweetest nectar. No matter how much of the sweet nectar they drank, the cup remained full. The more of it they consumed, the more of it they desired. Soon, there was nothing but bestial need left, and nothing but bitterness remained.",
 "enchantments": [
-    {"name": "Black Venom", "description": "This cup overflows with a bitter venom. Do not drink it.", "passive": true}],
-"ChangeHistory": [
-    {"chapter": 923, "description": "Received","type": "create"},
+    {"name": "Black Venom", "description": "This cup overflows with a bitter venom. Do not drink it.", "passive": true}
+],"ChangeHistory": [
+    {"chapter": 923, "description": "Received from Swarm of Black Tongues","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
@@ -362,19 +386,22 @@
     {"chapter": 1026, "description": "Renamed", "type": "update", "field": "name", "value": "Weaver's Needle"}
 ]},
 
-{ "name": "Nimble Catch", "rank": "Ascended", "tier": "?", "description": "told the story of a muskrat king who had sworn to eat a wondrous fish, only to learn that it could only be caught by using the eyes of the monarch of birds — his brother — as bait",
-"type": "Armor","enchantments": [{"name": "unknown", "description": "Provides no protection, but allowes the wearer to swim with surprising speed"}],
-"ChangeHistory": [
-    {"chapter": 974, "description": "Received","type": "create"},
+{ "name": "Nimble Catch", "rank": "Ascended", "tier": "?", "type": "Armor",
+"description": "told the story of a muskrat king who had sworn to eat a wondrous fish, only to learn that it could only be caught by using the eyes of the monarch of birds — his brother — as bait",
+"enchantments": [
+    {"name": "unknown", "description": "Provides no protection, but allowes the wearer to swim with surprising speed"}
+],"ChangeHistory": [
+    {"chapter": 974, "description": "Traded from Naeve for his surplus of Memories", "type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
-{ "name": "Essence Pearl", "rank": "Awakened", "tier": "?", "type": "Charm","description": "breathing was the essence of life, and beauty was its purpose. One had to be able to see clearly to appreciate beauty, and live long enough to enjoy it.",
+{ "name": "Essence Pearl", "rank": "Awakened", "tier": "?", "type": "Charm",
+"description": "breathing was the essence of life, and beauty was its purpose. One had to be able to see clearly to appreciate beauty, and live long enough to enjoy it.",
 "enchantments": [
     {"name": "unknown", "description": "passively produce air", "passive": true},
-    {"name": "unknown", "description": "gift the wielder with the ability to see clearly as if they were wearing a glass mask", "passive": false}],
-"ChangeHistory": [
-    {"chapter": 974, "description": "Received","type": "create"},
+    {"name": "unknown", "description": "gift the wielder with the ability to see clearly as if they were wearing a glass mask", "passive": false}
+],"ChangeHistory": [
+    {"chapter": 974, "description": "Traded from Naeve for his surplus of Memories","type": "create"},
     {"chapter": 1275, "description": "Given to Nephis", "type": "given_away"},
     {"chapter": 1391 , "description": "Received from Nephis","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
@@ -388,34 +415,36 @@
     {"name": "Blessing of Spirit", "description": "This Memory enhances one's ability to endure and recover from mental fatigue.", "passive": true},
     {"name": "Blessing of Flesh", "description": "This Memory enhances one's ability to endure and recover from physical fatigue.", "passive": true},
     {"name": "Sublime Silk", "description": "This Memory is woven out of sublime, mystical silk. It is impervious and possesses a beautiful splendor.", "passive": true},
-    {"name": "Blessing of Dusk", "description": "This Memory carries the blessing of Dusk, last sybil of the Estuary. The wearer can establish a mental connection with another being to hear their voice and thoughts, or make their own be heard.", "passive": false}],
-"ChangeHistory": [
-    {"chapter": 1022, "description": "Received","type": "create"},
+    {"name": "Blessing of Dusk", "description": "This Memory carries the blessing of Dusk, last sybil of the Estuary. The wearer can establish a mental connection with another being to hear their voice and thoughts, or make their own be heard.", "passive": false}
+],"ChangeHistory": [
+    {"chapter": 1022, "description": "Received from Corrupted Terror, Sybil of the Fallen Grace","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
 { "name": "Siege Souvenir", "rank": "Transcendent", "tier": "?", "type": "Weapon",
 "enchantments": [
     {"name": "Death Dealer", "description": "This javelin is able to consume a large amount of essence to deliver an obliterating strike.", "passive": false},
-    {"name": "unknown", "description": "Acts as a reservoir of essence for the 'Death Dealer' enchantment based on the 'Unbroken' enchantment", "passive": false}],
-"ChangeHistory": [
-    {"chapter": 1030, "description": "Received","type": "create"},
+    {"name": "unknown", "description": "Acts as a reservoir of essence for the 'Death Dealer' enchantment based on the 'Unbroken' enchantment", "passive": false}
+],"ChangeHistory": [
+    {"chapter": 1030, "description": "Turned a needle from an Corrupted Devil into a memory","type": "create"},
     {"chapter": 1031, "description": "Destroyed by it's own force after using it once against Goliath", "type": "destroy"}
 ]},
 
 { "name": "Mirror of Truth", "rank": "Ascended", "tier": "VII", "type": "Tool",
 "description": "Weaver was known as the master of lies, while Ariel was known as the keeper of truths. The two were not close and rarely met, which was why Ariel was surprised to find Weaver staring at his pyramid one day.\n\n\"Isn't it beautiful, this tomb of mine? Have you come to admire it?\" Ariel said.\n\nAfter a moment of silence, Weaver responded.\n\n\"I have not known that you've built a tomb, nor have I ever seen it. How would I know to admire it? I just happened to be here by chance. Now that I've seen it, my heart is untouched. I feel nothing.\"\n\nThen, Weaver asked.\n\n\"But you seem to feel too much, Demon of Dread. Your face is unsightly. You are smiling, but there are tears streaming from your eyes. Why?\"\n\nAriel laughed, \"I'm not sure.\"\n\nHe laughed and cried as he looked at the tomb, saying, \"I built it to bury the truth. Truth is the most hideous thing in the world, Weaver, and knowing it is a cruel torment. I mean to bury the truths that I cannot endure at the heart of this tomb, and be free of them forever.\"\n\nWeaver remained silent.\n\nAfter a while, Weaver spoke.\n\n\"It seems to me that you already did. And you already are.\"\n\nWith that, the Demon of Fate turned and walked away without looking back.\n\nWalking away, Weaver whispered.\n\n\"...You wanted to be free of the truth, so you didn't deserve it.\"",
 "enchantments": [
-    {"name": "Searching Reflection", "description": "Catch the visage of a being into the Mirror of Truth. Activate the enchantment to destroy the mirror and gain one power of the reflected being for a period of time that depends on its potency.", "passive": false}],
-"ChangeHistory": [
+    {"name": "Searching Reflection", "description": "Catch the visage of a being into the Mirror of Truth. Activate the enchantment to destroy the mirror and gain one power of the reflected being for a period of time that depends on its potency.", "passive": false}
+],"ChangeHistory": [
     {"chapter": 1122, "description": "Received from Fallen Titan, Defiled Seeker of Truth","type": "create"},
     {"chapter": 1569, "description": "Destroyed after using it for Nephis 'longing' ability to not get corrupted", "type": "destroy"}
 ]},
 
-{ "name": "Key of the Estuary", "rank": "Supreme", "tier": "VI", "description": "The answer is oblivion.",
-"enchantments": [{"name": "???", "description": "???"}],
-"ChangeHistory": [
-    {"chapter": 1237, "description": "Received","type": "create"},
+{ "name": "Key of the Estuary", "rank": "Supreme", "tier": "VI", 
+"description": "The answer is oblivion.",
+"enchantments": [
+    {"name": "???", "description": "???"}
+],"ChangeHistory": [
+    {"chapter": 1237, "description": "Suddenly appeared in his list of memories without his knowledge","type": "create"},
     {"chapter": 1574, "description": "Destroyed itself after the mad prince used it to open a door", "type": "destroy"}
 ]},
 
@@ -425,9 +454,8 @@
     {"name": "Legacy of Twilight", "description": "This Memory greatly improves the rate at which the wearer's essence is replenished at the borders between day and night.", "passive": true},
     {"name": "King's Resentment", "description": "This Memory grants the wearer complete immunity to mind attacks but plagues them with irresistible wrath instead.", "passive": true},
     {"name": "Royal Promise", "description": "This Memory infuses authority over water into the wearer's Domain. The extent of this authority depends on the might of the Domain.", "passive": true}
-],
-"ChangeHistory": [
-    {"chapter": 1288, "description": "Received","type": "create"},
+],"ChangeHistory": [
+    {"chapter": 1288, "description": "Received from Great Beast, Daeron of the Twilight Sea","type": "create"},
     {"chapter": 1582, "description": "Gone due to not being a Nightmare Spell Carrier", "type": "destroy"}
 ]},
 
@@ -437,8 +465,7 @@
     {"name": "Enduring", "description": "This enchantment made the mantle durable, resistant against the elements, and capable of repairing itself.", "passive": true},
     {"name": "Concealing", "description": "It masked the presence of its wearer", "passive": true},
     {"name": "Tasteless", "description": "Why did it have to be black?", "passive": true}
-],
-"ChangeHistory": [
+],"ChangeHistory": [
     {"chapter": 1342, "description": "Transformed Ananke's mantle into a Memory","type": "create"}
 ]},
 
@@ -446,8 +473,7 @@
 "description": "This mantle once belonged to Ananke of Weave, Priestess of the Nightmare Spell. She met the Children of Weaver in a nightmare and guided them across the perilous currents of time. Her wisdom was radiant, and her kindness was a blessing.\n\nMay she rest in peace",
 "enchantments": [
     {"name": "Unknown", "description": "It empowers all Memories around it. The area of effect of the enchantment is very large but the enhancement it provides is ever larger. A Memory capable of rising the power of another one by almost an entire rank.", "passive": true}
-],
-"ChangeHistory": [
+],"ChangeHistory": [
     {"chapter": 1343, "description": "Nephis lend him the memory to upgrade it","type": "create"},
     {"chapter": 1348, "description": "Rank up [Transcendent->Supreme]","type": "update", "field": "rank", "value": "Supreme"},
     {"chapter": 1348, "description": "The Upgrade caused the name to change to 'Crown of Dawn'","type": "update", "field": "name", "value": "Crown of Dawn"},
@@ -458,15 +484,19 @@
 "description": "The dreams and hopes of Wind Flower of the Twilight Sea are contained within this blossom. It was a farewell gift to her killer, Lost from Light.",
 "enchantments": [
     {"name": "Given Promise", "description": "Crush my hopes, crush my dreams. Crush my nightmares."}
-],
-"ChangeHistory": [
+],"ChangeHistory": [
     {"chapter": 1470, "description": "Received from a Transcendent human, Wind Flower of the Twilight Sea.","type": "create"},
     {"chapter": 1470 , "description": "Crushed by Sunny, giving him enough shadow fragments to be a terror","type": "destroy"}
 ]},
 
 { "name": "Handy Bracelet", "rank": "?", "tier": "?", 
 "description": "Poor replacement of the spell",
-"enchantments": [{}],
+"ChangeHistory": [
+    {"chapter": 1592, "description": "Revealed","type": "create"}
+]},
+
+{ "name": "Quintessence Pearl", "rank": "?", "tier": "?", 
+"description": "An improved version of the destroyed Essence Pearl.",
 "ChangeHistory": [
     {"chapter": 1592, "description": "Revealed","type": "create"}
 ]},
@@ -476,14 +506,7 @@
 "enchantments": [
     {"name": "Mantle of Lies", "description": "Hides the identity of its master.", "passive": true},
     {"name": "unknown", "description": "allows changing you hair color", "passive": false}
-],
-"ChangeHistory": [
+],"ChangeHistory": [
     {"chapter": 1685, "description": "Created as a knockoff for weaver's mask","type": "create"}
-]},
-{ "name": "Quintessence Pearl", "rank": "?", "tier": "?", 
-"description": "An improved version of the destroyed Essence Pearl.",
-"enchantments": [{}],
-"ChangeHistory": [
-    {"chapter": 1592, "description": "Revealed","type": "create"}
 ]}
 ]
