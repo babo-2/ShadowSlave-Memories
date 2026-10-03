@@ -466,7 +466,7 @@
     {"name": "Concealing", "description": "It masked the presence of its wearer", "passive": true},
     {"name": "Tasteless", "description": "Why did it have to be black?", "passive": true}
 ],"ChangeHistory": [
-    {"chapter": 1342, "description": "Transformed Ananke's mantle into a Memory","type": "create"}
+    {"chapter": 1342, "description": "Turned Ananke's mantle into a Memory","type": "create"}
 ]},
 
 { "name": "Dawn Shard", "rank": "Transcendent", "tier": "I", "type": "Garment", 
