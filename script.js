@@ -9,10 +9,13 @@ class InputMode {
 
 let items = [];
 
-let tiers = {"?": 0, "I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7};
-let ranks = {"?": 0, "Dormant": 1, "Awakened": 2, "Ascended": 3, "Transcendent": 4, "Supreme": 5, "Sacred": 6, "Divine": 7};
+const tiers = MEMORY_TIERS;
+const ranks = MEMORY_RANKS;
+const defaultColors = ["#7f8c8d", "#27ae60", "#2980b9", "#8e44ad", "#ff01c8", "#0400f3", "#f39c12", "#141414"];
+let storageWarningShown = false;
+let historyCache = {data: null, chapter: null, groups: null};
 
-let currentChapter = Number(localStorage.getItem("currentChapter")) || 500;
+let currentChapter = 500;
 
 //load items from storage
 let glintRanks=loadList("glintRanks", ['Divine']);
@@ -32,6 +35,14 @@ const grid_destroyed = document.getElementById("grid_destroyed");
 const grid_given_away = document.getElementById("grid_given_away");
 const panel = document.getElementById("infoPanel");
 const ascbtn = document.getElementById("sortBtn");
+const storedChapter = readStorage("currentChapter");
+if (storedChapter !== null) {
+  currentChapter = normalizeChapter(storedChapter, 500);
+  if (String(currentChapter) !== storedChapter) {
+    console.warn("[settings] currentChapter is invalid or out of bounds; using", currentChapter);
+    writeStorage("currentChapter", String(currentChapter));
+  }
+}
 
 let historyTooltip = null;
 let historyTooltipLocked = false;
@@ -41,7 +52,7 @@ panel.addEventListener("click", (e) => {
     document.querySelector(".dropdown").classList.toggle("open");
   }
   if (!historyTooltipLocked) return;
-  if (historyTooltip.contains(event.target)) return;
+  if (historyTooltip?.contains(e.target)) return;
   historyTooltipLocked = false;
   if (historyTooltip) {
       historyTooltip.remove();
@@ -76,28 +87,28 @@ settingsBtn.onclick = () => SettingsOverlay.classList.add("open");
 closeBtn.onclick = () => SettingsOverlay.classList.remove("open");
 
 function loadBackgroundColors(){//general load() function
-  let colorBy = localStorage.getItem("colorBy") || "rank";
+  let colorBy = loadColorBy();
   document.getElementById("colorBy").value=colorBy;
   document.querySelectorAll(".colorBySection").forEach(s => s.classList.remove("active"));
   document.getElementById("colorBySection-"+colorBy).classList.add("active")
   
   let tiersList = ["I", "II", "III", "IV", "V", "VI", "VII", "?"];
   let colorInputs=document.getElementById("colorBySection-tier").querySelectorAll("input");
-  loadList("colorsTier", ["#7f8c8d", "#27ae60", "#2980b9", "#8e44ad", "#ff01c8", "#0400f3", "#f39c12", "#14141480"]).forEach((color, i) => {
+  loadList("colorsTier", defaultColors).forEach((color, i) => {
     colorInputs[i].value=color;
-    if (colorBy=="tier") ApplyBackgroundColors("tier-"+tiersList[i], color);
+    if (colorBy=="tier") ApplyBackgroundColors("tier-"+tiersList[i], color, false);
   })
   let ranksList=["Dormant", "Awakened", "Ascended", "Transcendent", "Supreme", "Sacred", "Divine", "?"];
   colorInputs=document.getElementById("colorBySection-rank").querySelectorAll("input");
-  loadList("colorsRank", ["#7f8c8d", "#27ae60", "#2980b9", "#8e44ad", "#ff01c8", "#0400f3", "#f39c12", "#14141480"]).forEach((color, i) => {
+  loadList("colorsRank", defaultColors).forEach((color, i) => {
     colorInputs[i].value=color;
-    if (colorBy=="rank") ApplyBackgroundColors("rank-"+ranksList[i], color);
+    if (colorBy=="rank") ApplyBackgroundColors("rank-"+ranksList[i], color, false);
   })
 }
 function setColorBy(type="colorBy"){
   document.querySelectorAll("."+type+"Section").forEach(s => s.classList.remove("active"));
   document.getElementById(type+"Section-"+document.getElementById(type).value).classList.add("active")
-  localStorage.setItem("colorBy", document.getElementById("colorBy").value)//or save()
+  writeStorage("colorBy", document.getElementById("colorBy").value)
   loadBackgroundColors()
 }
 function toggleGlint(type=""){
@@ -139,16 +150,16 @@ document.querySelectorAll(".glintCheckBox").forEach((e) => {
   }
 });
 
-function ApplyBackgroundColors(type, color){
+function ApplyBackgroundColors(type, color, persist = true){
   document.querySelectorAll("."+type.replace("?", "\\?")).forEach(item => {
     item.style.backgroundColor=color
   })
-  save()
+  if (persist) save();
 }
 
 function resetColors(type){
   if (!confirm("Are you sure you want to reset the memory background colors?")) return;
-  original = ["#7f8c8d", "#27ae60", "#2980b9", "#8e44ad", "#ff01c8", "#0400f3", "#f39c12", "#14141480"]
+  const original = defaultColors;
   document.getElementById("colorBySection-"+type).querySelectorAll("input").forEach((input, i) => {
     input.value=original[i]
   })
@@ -186,34 +197,40 @@ historyToggle.addEventListener("change", () => {
 });
 
 //SEARCH
-slider.value=currentChapter;
-chapterInput.value=currentChapter;
+syncChapterControls(currentChapter);
 ascbtn.addEventListener("click", () => {
   asc = !asc;
   ascbtn.textContent = asc ? "↑" : "↓";
   renderItems();
 });
-slider.addEventListener("input", () => {//only visual, no update
-    const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-    slider.style.background = `linear-gradient(
-      to right,
-      #ffffff 0%,
-      #ffffff ${value}%,
-      rgba(6,6,6,0.7) ${value}%,
-      rgba(6,6,6,0.7) 100%
-    )`;
-    chapterInput.value=slider.value;
-    currentChapter = slider.value;
-});
-slider.addEventListener("change", () => {//update
-    renderItems()
-    localStorage.setItem("currentChapter", currentChapter+"")
-});
-chapterInput.addEventListener("change", ()=>{//update
-  slider.value=chapterInput.value;
-  currentChapter=chapterInput.value;
+// Preview while dragging; commit only when the slider is released.
+slider.addEventListener("input", () => syncChapterControls(Number(slider.value)));
+slider.addEventListener("change", () => setChapter(slider.value));
+chapterInput.addEventListener("change", () => setChapter(chapterInput.value));
+
+function normalizeChapter(value, fallback) {
+  const number = typeof value === "string" && value.trim() === "" ? NaN : Number(value);
+  if (!Number.isFinite(number)) return fallback;
+  return Math.min(Number(slider.max), Math.max(Number(slider.min), Math.trunc(number)));
+}
+
+function syncChapterControls(chapter) {
+  slider.value = chapter;
+  chapterInput.value = chapter;
+  const progress = (chapter - Number(slider.min)) / (Number(slider.max) - Number(slider.min)) * 100;
+  slider.style.background = `linear-gradient(to right, #fff 0%, #fff ${progress}%, rgba(6,6,6,0.7) ${progress}%, rgba(6,6,6,0.7) 100%)`;
+}
+
+function setChapter(value) {
+  const chapter = normalizeChapter(value, currentChapter);
+  syncChapterControls(chapter);
+  writeStorage("currentChapter", String(chapter));
+  if (chapter === currentChapter) return;
+  currentChapter = chapter;
+  isclicked = false;
+  hidePanel();
   renderItems();
-})
+}
 document.getElementById("searchInput").addEventListener("input", (e) => {
   renderItems()
 })
@@ -271,34 +288,73 @@ document.addEventListener("click", () => {
   }
 })
 
-function toggleDropdown() {
+function toggleDropdown(event) {
   document.querySelector(".dropdown").classList.toggle("open");
   if (dropdownSelect.classList.contains("open")){
     dropdownSelect.classList.toggle("open");
   }
   event.stopPropagation();
 }
-function loadList(list, defaultReturn){
-  lst = localStorage.getItem(list);
-  if (!lst){
-    return defaultReturn;
-  }else{
-    return JSON.parse(lst);
+function storageWarning(error) {
+  if (!storageWarningShown) console.warn("[settings] Browser storage is unavailable; changes may not persist.", error);
+  storageWarningShown = true;
+}
+function readStorage(key) {
+  try { return localStorage.getItem(key); }
+  catch (error) { storageWarning(error); return null; }
+}
+function writeStorage(key, value) {
+  try { localStorage.setItem(key, value); }
+  catch (error) { storageWarning(error); }
+}
+function loadColorBy() {
+  const value = readStorage("colorBy");
+  if (value === "rank" || value === "tier") return value;
+  if (value !== null) {
+    console.warn("[settings] colorBy is invalid; using rank.");
+    writeStorage("colorBy", "rank");
   }
+  return "rank";
+}
+function loadList(key, defaults) {
+  const raw = readStorage(key);
+  if (raw === null) return structuredClone(defaults);
+  let value;
+  try { value = JSON.parse(raw); }
+  catch { value = undefined; }
+  let normalized = structuredClone(defaults);
+  if (key === "generalSettings" && isRecord(value)) {
+    normalized.history = typeof value.history === "boolean" ? value.history : defaults.history;
+  } else if (key === "glintRanks" || key === "glintTiers") {
+    const allowed = key === "glintRanks" ? ranks : tiers;
+    if (Array.isArray(value)) {
+      const valid = value.filter(entry => typeof entry === "string" && entry !== "?" && Object.hasOwn(allowed, entry));
+      // Preserve an intentionally empty selection; recover wholly corrupt lists to defaults.
+      if (value.length === 0 || valid.length > 0) normalized = [...new Set(valid)];
+    }
+  } else if ((key === "colorsRank" || key === "colorsTier") && Array.isArray(value)) {
+    normalized = defaults.map((fallback, index) =>
+      typeof value[index] === "string" && /^#[0-9a-f]{6}$/i.test(value[index]) ? value[index] : fallback);
+  }
+  if (JSON.stringify(value) !== JSON.stringify(normalized)) {
+    console.warn(`[settings] ${key} contains invalid or missing values; restoring defaults for those values.`);
+    writeStorage(key, JSON.stringify(normalized));
+  }
+  return normalized;
 }
 function save_general_settings(){
-  localStorage.setItem("generalSettings", JSON.stringify(generalSettings))
+  writeStorage("generalSettings", JSON.stringify(generalSettings))
 }
 function save(){
-  localStorage.setItem("glintRanks", JSON.stringify(glintRanks));
-  localStorage.setItem("glintTiers", JSON.stringify(glintTiers));
+  writeStorage("glintRanks", JSON.stringify(glintRanks));
+  writeStorage("glintTiers", JSON.stringify(glintTiers));
   let colorsTier=[];
   let colorsRank=[];
   document.getElementById("colorBySection-tier").querySelectorAll("input").forEach(input => colorsTier.push(input.value));
   document.getElementById("colorBySection-rank").querySelectorAll("input").forEach(input => colorsRank.push(input.value));
-  localStorage.setItem("colorsTier", JSON.stringify(colorsTier))//WHY IS IT REVERSED???
-  localStorage.setItem("colorsRank", JSON.stringify(colorsRank))
-  localStorage.setItem("colorBy", document.getElementById("colorBy").value)
+  writeStorage("colorsTier", JSON.stringify(colorsTier))
+  writeStorage("colorsRank", JSON.stringify(colorsRank))
+  writeStorage("colorBy", document.getElementById("colorBy").value)
 }
 
 
@@ -320,31 +376,26 @@ function append(target, value) {
 
 function SearchFilter(data, query=""){
   const checked = [...document.querySelectorAll(".dropdown-menu input:checked")].map(cb => cb.value);
-  const result = data.filter((item) => {
-    if (query=="") return true;
-    for (const FilterType of checked){
-      if (!item[FilterType.split("-")[0]]) continue;
-      if (FilterType.includes("-")){
-        for (const ench of item[FilterType.split("-")[0]]){
-          if (ench[FilterType.split("-")[1]] && ench[FilterType.split("-")[1]].toLowerCase().includes(query.toLowerCase())){
-            return true;
-          }
-        }
-        return false;
-      }
-      if (item[FilterType].toLowerCase().includes(query.toLowerCase())){
-        return true;
-      }
-    }
-    return false;
-  });
-  return result;
+  const needle = query.toLowerCase();
+  const contains = value => typeof value === "string" && value.toLowerCase().includes(needle);
+  return data.filter(item => !needle || checked.some(filter => {
+    const [field, nested] = filter.split("-");
+    return nested
+      ? Array.isArray(item[field]) && item[field].some(entry => contains(entry?.[nested]))
+      : contains(item[field]);
+  }));
+}
+function getChapterItems() {
+  if (historyCache.data !== items || historyCache.chapter !== currentChapter) {
+    historyCache = {data: items, chapter: currentChapter, groups: updateHistory(items, currentChapter)};
+  }
+  return historyCache.groups;
 }
 function renderItems(query="") {
   if (!query){
     query=document.getElementById("searchInput").value
   }
-  let [owned, destroyed, given_away] = updateHistory(items, currentChapter)
+  let [owned, destroyed, given_away] = getChapterItems();
   owned = SearchFilter(owned, query)
   destroyed = SearchFilter(destroyed, query)
   given_away = SearchFilter(given_away, query)
@@ -393,8 +444,8 @@ function createItem(item) {
       div.classList.add("rank-unknown")
     } */
     div.innerHTML = `
-        <div class="item-name">${item.name}</div>
-        <div class="item-tier">${item.tier}</div>
+        <div class="item-name">${escapeHtml(item.name)}</div>
+        <div class="item-tier">${escapeHtml(item.tier)}</div>
     `;
 
     div.addEventListener("mousemove", (e) => {if (!isclicked && !InputMode.isTouch) showPanel(item, e.clientX, e.clientY)});
@@ -431,15 +482,15 @@ function applyChange(item, change) {
             if (Object.hasOwn(change, "where")) {
                 for (const field of item[change.field]) {
                     if (matches(change.where, field)) {
-                        Object.assign(field, change.value);
+                        Object.assign(field, structuredClone(change.value));
                     }
                 }
             } else {
-                item[change.field] = change.value;
+                item[change.field] = structuredClone(change.value);
             }
             break;
         case "add":
-            item[change.field] = append(item[change.field], change.value);
+            item[change.field] = append(item[change.field], structuredClone(change.value));
             break;
         case "destroy":
             return { destroyed: true };
@@ -469,6 +520,7 @@ function updateHistory(data, chapter) {
                 if (result.created) {
                     isCreated = true;
                     isDestroyed = false;
+                    isGivenAway = false;
                 }
                 if (result.destroyed) {
                     isDestroyed = true;
@@ -1084,10 +1136,18 @@ function hidePanel() {
   }
 }
 
-fetch("/memories.json")
-  .then(response => response.json())
+fetch("./memories.json")
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  })
   .then(data => {
-    items = data;
+    items = validateMemories(data);
     renderItems()
-  }
-);
+  })
+  .catch(error => {
+    console.error("[memories] Could not load memory data; using an empty collection.", error);
+    items = [];
+    renderItems();
+    document.getElementById("dataStatus").textContent = "Memories could not be loaded. Please reload to try again.";
+  });

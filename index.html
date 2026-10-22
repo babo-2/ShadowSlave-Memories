@@ -21,7 +21,7 @@
           <input id="searchInput" type="text" placeholder="🔍 Search..." />
         </div>
         <div class="dropdown">
-          <button class="dropdown-btn" onclick="toggleDropdown()">
+          <button class="dropdown-btn" onclick="toggleDropdown(event)">
             Search by ▾
           </button>
           <div class="dropdown-menu" id="menu">
@@ -54,7 +54,7 @@
       <label id="chapterLabel" for="chapter">Chapter</label>
       <div class="controlsChapter">
         <input type="range" id="chapter" min="0" max="2300" value="0" step="1">
-        <input type="number" id="chapter-input">
+        <input type="number" id="chapter-input" min="0" max="2300" step="1" aria-label="Chapter number">
       </div>
     </div>
   </div>
@@ -127,7 +127,7 @@
             </div>
             <div class="field">
               <label for="colorPicker">?: </label>
-              <input onchange="ApplyBackgroundColors('rank-?', this.value)" type="color" name="colorPicker" value="#14141480">
+              <input onchange="ApplyBackgroundColors('rank-?', this.value)" type="color" name="colorPicker" value="#141414">
             </div>
             <button style="margin-top: 5%;" onclick="resetColors('rank')">reset</button>
             <button onclick="UpdateColors('tier')">Use colors from tier</button>
@@ -159,11 +159,11 @@
             </div>
             <div class="field">
               <label for="colorPicker">VII: </label>
-              <input onchange="ApplyBackgroundColors('tier-VI', this.value)" type="color" name="colorPicker" value="#f39c12">
+              <input onchange="ApplyBackgroundColors('tier-VII', this.value)" type="color" name="colorPicker" value="#f39c12">
             </div>
             <div class="field">
               <label for="colorPicker">?: </label>
-              <input onchange="ApplyBackgroundColors('tier-?', this.value)" type="color" name="colorPicker" value="#14141480">
+              <input onchange="ApplyBackgroundColors('tier-?', this.value)" type="color" name="colorPicker" value="#141414">
             </div>
             <button style="margin-top: 5%;" onclick="resetColors('tier')">reset</button>
             <button onclick="UpdateColors('rank')">Use colors from rank</button>
@@ -206,7 +206,9 @@
   </div>
 
   <div id="infoPanel"></div>
+  <p id="dataStatus" role="status"></p>
 
-  <script src="script.js?v=6"></script>
+  <script src="data.js?v=1"></script>
+  <script src="script.js?v=7"></script>
 </body>
 </html>
