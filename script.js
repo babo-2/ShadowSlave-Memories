@@ -407,6 +407,10 @@ function createItem(item) {
             hidePanel();
             return;
         }
+        // stopPropagation below keeps the document click handler from closing a pinned tooltip
+        historyTooltipLocked = false;
+        hideHistoryTooltip();
+
         if (!(isclicked && currentlyLocked!=item.name)){isclicked=!isclicked;}
         currentlyLocked=item.name;
         showPanel(item, event.clientX, event.clientY)
