@@ -1,3 +1,274 @@
+// Data validation
+// Normalize untrusted JSON once, before it reaches search, history, or rendering.
+const MEMORY_RANKS = {"?": 0, Dormant: 1, Awakened: 2, Ascended: 3, Transcendent: 4, Supreme: 5, Sacred: 6, Divine: 7};
+const MEMORY_TIERS = {"?": 0, I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7};
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function dataWarning(path, message) {
+  console.warn(`[memories] ${path}: ${message}`);
+}
+
+function normalizeMemoryField(field, value, path) {
+  if (field === "rank" || field === "tier") {
+    const allowed = field === "rank" ? MEMORY_RANKS : MEMORY_TIERS;
+    if (typeof value === "string" && Object.hasOwn(allowed, value)) return value;
+    dataWarning(path, "required value is missing or invalid; using '?'.");
+    return "?";
+  }
+  if (field === "enchantments") {
+    if (value === undefined) return [];
+    if (!Array.isArray(value)) {
+      dataWarning(path, "expected an array; using [].");
+      return [];
+    }
+    return value.map((entry, index) => normalizeEnchantment(entry, `${path}[${index}]`));
+  }
+  if (typeof value === "string" && (field !== "name" || value.trim())) return value;
+  if (field === "name" || value !== undefined) {
+    dataWarning(path, `${field === "name" ? "required value is missing or invalid" : "expected text"}; using a default.`);
+  }
+  return field === "name" ? "Unknown memory" : "";
+}
+
+function normalizeEnchantment(value, path, partial = false) {
+  if (!isRecord(value)) {
+    dataWarning(path, "expected an enchantment object; using defaults.");
+    value = {};
+  }
+  const result = {};
+  if (!partial || Object.hasOwn(value, "name")) {
+    if (typeof value.name === "string" && value.name.trim()) result.name = value.name;
+    else {
+      dataWarning(`${path}.name`, "required value is missing or invalid; using 'Unknown enchantment'.");
+      result.name = "Unknown enchantment";
+    }
+  }
+  if (!partial || Object.hasOwn(value, "description")) {
+    result.description = normalizeMemoryField("description", value.description, `${path}.description`);
+  }
+  if (!partial || Object.hasOwn(value, "passive")) {
+    if (value.passive !== undefined && value.passive !== null && typeof value.passive !== "boolean") {
+      dataWarning(`${path}.passive`, "expected a boolean; using null (unknown).");
+    }
+    result.passive = typeof value.passive === "boolean" ? value.passive : null;
+  }
+  return result;
+}
+
+function normalizeHistoryOperation(value, chapter, description, path) {
+  if (!isRecord(value)) {
+    dataWarning(path, "expected a history event; ignoring it.");
+    return [];
+  }
+  const text = typeof value.description === "string" ? value.description : description;
+  if (Object.hasOwn(value, "changes")) {
+    if (!Array.isArray(value.changes)) {
+      dataWarning(`${path}.changes`, "expected an array; using no changes.");
+      return [];
+    }
+    return value.changes.flatMap((change, index) =>
+      normalizeHistoryOperation(change, chapter, text, `${path}.changes[${index}]`));
+  }
+  // An explicitly empty type is an existing informational entry, not an acquisition.
+  const type = value.type === "" ? "note" : value.type;
+  if (!["note", "create", "destroy", "given_away", "update", "add"].includes(type)) {
+    dataWarning(`${path}.type`, "required value is missing or invalid; ignoring the operation.");
+    return [];
+  }
+  const result = {chapter, description: text, type};
+  if (type !== "update" && type !== "add") return [result];
+  const field = value.field;
+  if (!["name", "rank", "tier", "type", "description", "enchantments"].includes(field)) {
+    dataWarning(`${path}.field`, "required value is missing or invalid; ignoring the operation.");
+    return [];
+  }
+  result.field = field;
+  if (!Object.hasOwn(value, "value")) {
+    dataWarning(`${path}.value`, "required value is missing; ignoring the operation to preserve existing data.");
+    return [];
+  }
+  if (Object.hasOwn(value, "where")) {
+    const keys = isRecord(value.where) ? Object.keys(value.where) : [];
+    if (type !== "update" || field !== "enchantments" || keys.length === 0 ||
+        !keys.every(key => ["name", "description", "passive"].includes(key) &&
+          (key === "passive" ? typeof value.where[key] === "boolean" : typeof value.where[key] === "string")) ||
+        !isRecord(value.value)) {
+      dataWarning(`${path}.where`, "invalid enchantment update; ignoring the operation.");
+      return [];
+    }
+    result.where = {...value.where};
+    result.value = normalizeEnchantment(value.value, `${path}.value`, true);
+  } else if (type === "add") {
+    if (field === "enchantments") {
+      result.value = normalizeEnchantment(value.value, `${path}.value`);
+    } else if (["name", "description", "type"].includes(field) && typeof value.value === "string") {
+      result.value = value.value;
+    } else {
+      dataWarning(`${path}.value`, "invalid addition; ignoring the operation.");
+      return [];
+    }
+  } else {
+    result.value = normalizeMemoryField(field, value.value, `${path}.value`);
+  }
+  return [result];
+}
+
+function validateMemories(data) {
+  if (!Array.isArray(data)) {
+    dataWarning("root", "expected an array of memories; using [].");
+    return [];
+  }
+  return data.map((value, index) => {
+    const path = `memory[${index}]${typeof value?.name === "string" ? ` (${value.name})` : ""}`;
+    if (!isRecord(value)) {
+      dataWarning(path, "expected an object; using defaults.");
+      value = {};
+    }
+    const memory = {};
+    for (const field of ["name", "rank", "tier", "type", "description", "enchantments"]) {
+      memory[field] = normalizeMemoryField(field, value[field], `${path}.${field}`);
+    }
+    memory.ChangeHistory = [];
+    if (!Array.isArray(value.ChangeHistory)) {
+      dataWarning(`${path}.ChangeHistory`, "required array is missing or invalid; using [] (no known acquisition).");
+      return memory;
+    }
+    value.ChangeHistory.forEach((entry, eventIndex) => {
+      const eventPath = `${path}.ChangeHistory[${eventIndex}]`;
+      if (!isRecord(entry) || !Number.isSafeInteger(entry.chapter) || entry.chapter < 0) {
+        dataWarning(`${eventPath}.chapter`, "required nonnegative integer is missing or invalid; ignoring the event.");
+        return;
+      }
+      const description = typeof entry.description === "string" ? entry.description : "Changed";
+      const changes = normalizeHistoryOperation(entry, entry.chapter, description, eventPath);
+      if (changes.length) {
+        memory.ChangeHistory.push({chapter: entry.chapter, description, changes});
+      }
+    });
+    // Stable sorting preserves the authored order of changes in the same chapter.
+    memory.ChangeHistory.sort((a, b) => a.chapter - b.chapter);
+    return memory;
+  });
+}
+
+// Search matching
+const SEARCH_MODES = ["contains", "equals", "startsWith", "endsWith", "notContains", "wildcard", "regex"];
+
+// Full-field glob matching without converting user wildcards into a regular expression.
+function matchesWildcard(text, pattern) {
+  let position = 0;
+  let token = 0;
+  let star = -1;
+  let retry = 0;
+  while (position < text.length) {
+    if (pattern[token] === "?" || pattern[token] === text[position]) {
+      position++;
+      token++;
+    } else if (pattern[token] === "*") {
+      star = token++;
+      retry = position;
+    } else if (star !== -1) {
+      token = star + 1;
+      position = ++retry;
+    } else return false;
+  }
+  while (pattern[token] === "*") token++;
+  return token === pattern.length;
+}
+
+// At most one insertion, deletion, replacement, or adjacent-letter swap.
+function matchesOneTypo(text, query) {
+  if (text === query) return true;
+  if (Math.abs(text.length - query.length) > 1) return false;
+  let index = 0;
+  while (index < text.length && index < query.length && text[index] === query[index]) index++;
+  if (text.length > query.length) return text.slice(index + 1) === query.slice(index);
+  if (text.length < query.length) return text.slice(index) === query.slice(index + 1);
+  return text.slice(index + 1) === query.slice(index + 1) ||
+    (text[index] === query[index + 1] && text[index + 1] === query[index] &&
+      text.slice(index + 2) === query.slice(index + 2));
+}
+
+function matchesFuzzyText(text, query, mode) {
+  if (mode === "equals") return matchesOneTypo(text, query);
+  // An edit can change the length by one. Keep start/end anchors intact.
+  for (let length = Math.max(1, query.length - 1); length <= query.length + 1; length++) {
+    if (length > text.length) continue;
+    if (mode === "startsWith") {
+      if (matchesOneTypo(text.slice(0, length), query)) return true;
+    } else if (mode === "endsWith") {
+      if (matchesOneTypo(text.slice(-length), query)) return true;
+    } else {
+      for (let start = 0; start <= text.length - length; start++) {
+        if (matchesOneTypo(text.slice(start, start + length), query)) return true;
+      }
+    }
+  }
+  return false;
+}
+
+function getSearchValues(item, fields) {
+  return fields.flatMap(filter => {
+    const [field, nested] = filter.split("-");
+    const values = nested && Array.isArray(item[field])
+      ? item[field].map(entry => entry?.[nested]) : nested ? [] : [item[field]];
+    return values.filter(value => typeof value === "string");
+  });
+}
+
+// Regex predicates run in the inline worker, where slow expressions can be terminated.
+function createSearchMatcher(query, settings) {
+  const raw = query.trim();
+  if (!raw) return () => true;
+  const normalize = value => settings.caseSensitive ? value : value.toLowerCase();
+  const needle = normalize(raw);
+  const expression = settings.mode === "regex" ? new RegExp(raw, settings.caseSensitive ? "" : "i") : null;
+  const match = value => {
+    const text = normalize(value);
+    if (settings.fuzzy && !["wildcard", "regex"].includes(settings.mode)) {
+      return matchesFuzzyText(text, needle, settings.mode);
+    }
+    switch (settings.mode) {
+      case "equals": return text === needle;
+      case "startsWith": return text.startsWith(needle);
+      case "endsWith": return text.endsWith(needle);
+      case "wildcard": return matchesWildcard(text, needle);
+      case "regex": return expression.test(value);
+      default: return text.includes(needle);
+    }
+  };
+  return values => settings.mode === "notContains" ? !values.some(match) : values.some(match);
+}
+
+// Worker and application UI
+// This self-contained function becomes an inline worker, so deployment needs only this JS file.
+function regexSearchWorker() {
+  self.onmessage = ({data}) => {
+    try {
+      const expression = new RegExp(data.query.trim(), data.settings.caseSensitive ? "" : "i");
+      const indices = [];
+      data.values.forEach((values, index) => {
+        if (values.some(value => expression.test(value))) indices.push(index);
+      });
+      self.postMessage({indices});
+    } catch (error) {
+      self.postMessage({error: `Invalid regular expression: ${error.message}`});
+    }
+  };
+}
+
+let regexWorkerUrl = null;
+function createRegexWorker() {
+  if (!regexWorkerUrl) {
+    const source = `(${regexSearchWorker.toString()})();`;
+    regexWorkerUrl = URL.createObjectURL(new Blob([source], {type: "text/javascript"}));
+  }
+  return new Worker(regexWorkerUrl);
+}
+
 /** Detects devices without hover (phones, tablets), where mouse-over interactions don't apply. */
 class InputMode {
   static #noHover = window.matchMedia("(hover: none)");
@@ -21,6 +292,9 @@ let currentChapter = 500;
 let glintRanks=loadList("glintRanks", ['Divine']);
 let glintTiers=loadList("glintTiers", ['VII']);
 let generalSettings=loadList("generalSettings", {"history": true});
+let searchSettings = loadList("searchSettings", {mode: "contains", caseSensitive: false, fuzzy: false});
+let activeSearchWorker = null;
+let searchTimeout = null;
 
 let historyEnabled = generalSettings.history;
 
@@ -35,6 +309,10 @@ const grid_destroyed = document.getElementById("grid_destroyed");
 const grid_given_away = document.getElementById("grid_given_away");
 const panel = document.getElementById("infoPanel");
 const ascbtn = document.getElementById("sortBtn");
+const searchInput = document.getElementById("searchInput");
+const searchOptions = document.querySelector(".dropdown");
+const searchOptionsBtn = document.getElementById("searchOptionsBtn");
+const clearSearch = document.getElementById("clearSearch");
 const storedChapter = readStorage("currentChapter");
 if (storedChapter !== null) {
   currentChapter = normalizeChapter(storedChapter, 500);
@@ -48,9 +326,7 @@ let historyTooltip = null;
 let historyTooltipLocked = false;
 panel.addEventListener("click", (e) => {
   e.stopPropagation()
-  if (document.querySelector(".dropdown").classList.contains("open")){
-    document.querySelector(".dropdown").classList.toggle("open");
-  }
+  setSearchOptionsOpen(false);
   if (!historyTooltipLocked) return;
   if (historyTooltip?.contains(e.target)) return;
   historyTooltipLocked = false;
@@ -197,10 +473,34 @@ historyToggle.addEventListener("change", () => {
 });
 
 //SEARCH
+const matchModeInput = document.getElementById("searchMatchMode");
+const caseSensitiveInput = document.getElementById("searchCaseSensitive");
+const fuzzyInput = document.getElementById("searchFuzzy");
+matchModeInput.value = searchSettings.mode;
+caseSensitiveInput.checked = searchSettings.caseSensitive;
+fuzzyInput.checked = searchSettings.fuzzy;
+function updateFuzzyControl() {
+  fuzzyInput.disabled = ["wildcard", "regex"].includes(searchSettings.mode);
+  document.getElementById("searchFuzzyDescription").textContent = fuzzyInput.disabled
+    ? "Available with text matching modes." : "Allow one character typo.";
+}
+updateFuzzyControl();
+function saveSearchSettings() {
+  searchSettings = {mode: matchModeInput.value, caseSensitive: caseSensitiveInput.checked, fuzzy: fuzzyInput.checked};
+  updateFuzzyControl();
+  writeStorage("searchSettings", JSON.stringify(searchSettings));
+  renderItems();
+}
+matchModeInput.addEventListener("change", saveSearchSettings);
+caseSensitiveInput.addEventListener("change", saveSearchSettings);
+fuzzyInput.addEventListener("change", saveSearchSettings);
 syncChapterControls(currentChapter);
 ascbtn.addEventListener("click", () => {
   asc = !asc;
   ascbtn.textContent = asc ? "↑" : "↓";
+  const label = asc ? "Ascending order. Switch to descending" : "Descending order. Switch to ascending";
+  ascbtn.setAttribute("aria-label", label);
+  ascbtn.title = label;
   renderItems();
 });
 // Preview while dragging; commit only when the slider is released.
@@ -231,9 +531,20 @@ function setChapter(value) {
   hidePanel();
   renderItems();
 }
-document.getElementById("searchInput").addEventListener("input", (e) => {
-  renderItems()
-})
+searchInput.addEventListener("input", () => renderItems());
+clearSearch.addEventListener("click", () => {
+  searchInput.value = "";
+  renderItems();
+  searchInput.focus();
+});
+document.getElementById("menu").addEventListener("change", () => renderItems());
+searchOptions.addEventListener("keydown", event => {
+  if (event.key === "Escape" && searchOptions.classList.contains("open")) {
+    event.preventDefault();
+    setSearchOptionsOpen(false);
+    searchOptionsBtn.focus();
+  }
+});
 
 document.getElementById("menu").addEventListener("click", (e) => {
   if (isclicked){
@@ -247,31 +558,16 @@ document.getElementById("menu").addEventListener("click", (e) => {
   e.stopPropagation();
 })
 
-const dropdownSelect = document.querySelector(".dropdown-select");
-const buttonSelect = dropdownSelect.querySelector(".dropdown-select-button");
-const menuSelect = dropdownSelect.querySelector(".dropdown-select-menu");
 let valueSelect = "rank";
-buttonSelect.onclick = event => {
-    event.stopPropagation()
-    dropdownSelect.classList.toggle("open");
-    if (document.querySelector(".dropdown").classList.contains("open")){
-      document.querySelector(".dropdown").classList.toggle("open");
-    }
-};
-menuSelect.onclick = event => {
-    event.stopPropagation()
-    const option = event.target.closest("[data-value]");
-    if (!option) return;
-
-    if (option.dataset.value==valueSelect) return;
-    valueSelect = option.dataset.value;
-    buttonSelect.querySelector("span").textContent = option.textContent;
-    dropdownSelect.classList.remove("open");
-    renderItems()
-};
+document.getElementById("sortSelect").addEventListener("change", event => {
+  valueSelect = event.target.value;
+  renderItems();
+});
 
 //close all with click
-document.addEventListener("click", () => {
+document.addEventListener("click", event => {
+  // Labels, their native checkbox click, and menu padding all count as inside.
+  if (searchOptions.contains(event.target)) return;
   if (isclicked){
     isclicked=false;
     hidePanel()
@@ -280,20 +576,29 @@ document.addEventListener("click", () => {
       renderItems();
     }
   }
-  if (document.querySelector(".dropdown").classList.contains("open")){
-    document.querySelector(".dropdown").classList.toggle("open");
-  }
-  if (dropdownSelect.classList.contains("open")){
-    dropdownSelect.classList.toggle("open");
-  }
+  setSearchOptionsOpen(false);
 })
 
+function setSearchOptionsOpen(open) {
+  searchOptions.classList.toggle("open", open);
+  searchOptionsBtn.setAttribute("aria-expanded", String(open));
+}
 function toggleDropdown(event) {
-  document.querySelector(".dropdown").classList.toggle("open");
-  if (dropdownSelect.classList.contains("open")){
-    dropdownSelect.classList.toggle("open");
-  }
+  setSearchOptionsOpen(!searchOptions.classList.contains("open"));
   event.stopPropagation();
+}
+
+function updateSearchSummary(query, total, available) {
+  const selected = [...document.querySelectorAll("#menu input:checked")];
+  const labels = selected.map(input => input.parentElement.textContent.trim());
+  document.getElementById("searchFieldCount").textContent = selected.length;
+  searchOptionsBtn.setAttribute("aria-label", `Search in: ${labels.join(", ") || "no fields selected"}`);
+  clearSearch.hidden = searchInput.value.length === 0;
+  document.getElementById("searchResults").textContent = query.trim()
+    ? `${total} of ${available} memories · Chapter ${currentChapter}`
+    : `${total} ${total === 1 ? "memory" : "memories"} · Chapter ${currentChapter}`;
+  document.getElementById("searchEmpty").hidden = total !== 0;
+  document.getElementById("searchEmptyTitle").textContent = available ? "No matching memories" : "No memories at this chapter";
 }
 function storageWarning(error) {
   if (!storageWarningShown) console.warn("[settings] Browser storage is unavailable; changes may not persist.", error);
@@ -325,6 +630,10 @@ function loadList(key, defaults) {
   let normalized = structuredClone(defaults);
   if (key === "generalSettings" && isRecord(value)) {
     normalized.history = typeof value.history === "boolean" ? value.history : defaults.history;
+  } else if (key === "searchSettings" && isRecord(value)) {
+    normalized.mode = SEARCH_MODES.includes(value.mode) ? value.mode : defaults.mode;
+    normalized.caseSensitive = typeof value.caseSensitive === "boolean" ? value.caseSensitive : defaults.caseSensitive;
+    normalized.fuzzy = value.mode === "fuzzy" || (typeof value.fuzzy === "boolean" ? value.fuzzy : defaults.fuzzy);
   } else if (key === "glintRanks" || key === "glintTiers") {
     const allowed = key === "glintRanks" ? ranks : tiers;
     if (Array.isArray(value)) {
@@ -374,16 +683,10 @@ function append(target, value) {
 }
 
 
-function SearchFilter(data, query=""){
-  const checked = [...document.querySelectorAll(".dropdown-menu input:checked")].map(cb => cb.value);
-  const needle = query.toLowerCase();
-  const contains = value => typeof value === "string" && value.toLowerCase().includes(needle);
-  return data.filter(item => !needle || checked.some(filter => {
-    const [field, nested] = filter.split("-");
-    return nested
-      ? Array.isArray(item[field]) && item[field].some(entry => contains(entry?.[nested]))
-      : contains(item[field]);
-  }));
+function SearchFilter(data, query = "", fields, matcher) {
+  if (!query.trim()) return [...data];
+  if (!fields.length) return [];
+  return data.filter(item => matcher(getSearchValues(item, fields)));
 }
 function getChapterItems() {
   if (historyCache.data !== items || historyCache.chapter !== currentChapter) {
@@ -395,10 +698,67 @@ function renderItems(query="") {
   if (!query){
     query=document.getElementById("searchInput").value
   }
-  let [owned, destroyed, given_away] = getChapterItems();
-  owned = SearchFilter(owned, query)
-  destroyed = SearchFilter(destroyed, query)
-  given_away = SearchFilter(given_away, query)
+  // Termination also prevents an old result from replacing a newer query/chapter.
+  if (activeSearchWorker) activeSearchWorker.terminate();
+  activeSearchWorker = null;
+  clearTimeout(searchTimeout);
+  setSearchError("");
+  const groups = getChapterItems();
+  const available = groups.reduce((count, group) => count + group.length, 0);
+  const fields = [...document.querySelectorAll("#menu input:checked")].map(input => input.value);
+  if (searchSettings.mode === "regex" && query.trim() && fields.length) {
+    // Arbitrary expressions run off the UI thread and have a fixed time budget.
+    renderFilteredItems([[], [], []], query, available);
+    document.getElementById("searchEmpty").hidden = true;
+    document.getElementById("searchResults").textContent = "Searching…";
+    const fail = message => {
+      if (activeSearchWorker) activeSearchWorker.terminate();
+      activeSearchWorker = null;
+      clearTimeout(searchTimeout);
+      renderFilteredItems([[], [], []], query, available);
+      document.getElementById("searchEmpty").hidden = true;
+      setSearchError(message);
+    };
+    try {
+      const worker = createRegexWorker();
+      activeSearchWorker = worker;
+      worker.onmessage = ({data}) => {
+        if (activeSearchWorker !== worker) return;
+        if (data.error) { fail(data.error); return; }
+        clearTimeout(searchTimeout);
+        worker.terminate();
+        activeSearchWorker = null;
+        const indices = new Set(data.indices);
+        let index = 0;
+        renderFilteredItems(groups.map(group => group.filter(() => indices.has(index++))), query, available);
+      };
+      worker.onerror = event => {
+        if (activeSearchWorker !== worker) return;
+        event.preventDefault();
+        fail("Regex search could not start. Try another matching mode or reload the page.");
+      };
+      searchTimeout = setTimeout(() => {
+        if (activeSearchWorker === worker) fail("This regular expression took too long. Try a simpler pattern.");
+      }, 1500);
+      worker.postMessage({query, settings: searchSettings, values: groups.flat().map(item => getSearchValues(item, fields))});
+    } catch {
+      fail("Regex search is unavailable in this browser. Choose another matching mode.");
+    }
+    return;
+  }
+  const matcher = fields.length ? createSearchMatcher(query, searchSettings) : () => false;
+  renderFilteredItems(groups.map(group => SearchFilter(group, query, fields, matcher)), query, available);
+}
+
+function setSearchError(message) {
+  const error = document.getElementById("searchError");
+  error.textContent = message;
+  error.hidden = !message;
+  searchInput.setAttribute("aria-invalid", String(Boolean(message)));
+}
+
+function renderFilteredItems([owned, destroyed, given_away], query, available) {
+  updateSearchSummary(query, owned.length + destroyed.length + given_away.length, available);
   let [OwnedItems, DestroyedItems, given_away_items] = sortItems(owned, destroyed, given_away, currentChapter);
   //OWNED
   grid_owned.innerHTML="";
@@ -465,9 +825,7 @@ function createItem(item) {
         if (!(isclicked && currentlyLocked!=item.name)){isclicked=!isclicked;}
         currentlyLocked=item.name;
         showPanel(item, event.clientX, event.clientY)
-        if (document.querySelector(".dropdown").classList.contains("open")){
-          document.querySelector(".dropdown").classList.toggle("open");
-        }
+        setSearchOptionsOpen(false);
         event.stopPropagation();
     });
     return div;
@@ -1149,5 +1507,7 @@ fetch("./memories.json")
     console.error("[memories] Could not load memory data; using an empty collection.", error);
     items = [];
     renderItems();
+    document.getElementById("searchEmpty").hidden = true;
+    document.getElementById("searchResults").textContent = "";
     document.getElementById("dataStatus").textContent = "Memories could not be loaded. Please reload to try again.";
   });

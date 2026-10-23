@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sunny's memories</title>
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=11">
   <link rel="icon" href="data:,">
   <meta name="google-site-verification" content="MkeefcRBU_Tw7sqT4G-G0O-QwxG1KsKYbzltt_3SdCA" />
   <meta name="description" content="Sunny’s memories in Shadow Slave by chapter">
@@ -15,39 +15,41 @@
   <div class="controls">
 
 
-    <div class="searchControls">
+    <div class="searchControls" role="search" aria-label="Find memories">
+      <label class="search-label" for="searchInput">Find a memory</label>
       <div class="searchRow">
         <div class="search-wrap">
-          <input id="searchInput" type="text" placeholder="🔍 Search..." />
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+          <input id="searchInput" type="search" placeholder="Search memories…" autocomplete="off" aria-describedby="searchError" />
+          <button id="clearSearch" class="clear-search" type="button" aria-label="Clear search" hidden>×</button>
         </div>
         <div class="dropdown">
-          <button class="dropdown-btn" onclick="toggleDropdown(event)">
-            Search by ▾
+          <button class="dropdown-btn" id="searchOptionsBtn" type="button" onclick="toggleDropdown(event)" aria-expanded="false" aria-controls="menu">
+            Search in <span id="searchFieldCount" class="field-count">1</span>
           </button>
           <div class="dropdown-menu" id="menu">
-            <label><input checked onchange="renderItems()" type="checkbox" value="name"> name</label>
-            <label><input onchange="renderItems()" type="checkbox" value="rank"> rank</label>
-            <label><input onchange="renderItems()" type="checkbox" value="tier"> tier</label>
-            <label><input onchange="renderItems()" type="checkbox" value="description"> description</label>
-            <label><input onchange="renderItems()" type="checkbox" value="enchantments-name"> enchantments names</label>
-            <label><input onchange="renderItems()" type="checkbox" value="enchantments-description"> enchantments description</label>
+            <label for="search-name"><input id="search-name" checked type="checkbox" value="name"> Name</label>
+            <label for="search-rank"><input id="search-rank" type="checkbox" value="rank"> Rank</label>
+            <label for="search-tier"><input id="search-tier" type="checkbox" value="tier"> Tier</label>
+            <label for="search-description"><input id="search-description" type="checkbox" value="description"> Description</label>
+            <label for="search-enchantment-name"><input id="search-enchantment-name" type="checkbox" value="enchantments-name"> Enchantment names</label>
+            <label for="search-enchantment-description"><input id="search-enchantment-description" type="checkbox" value="enchantments-description"> Enchantment descriptions</label>
           </div>
         </div>
       </div>
-
-    <div class="dropdown-select">
-        <button class="dropdown-select-button">Sort by: <span>Rank</span> ▾</button>
-
-        <div class="dropdown-select-menu">
-            <button data-value="rank">Rank</button>
-            <button data-value="tier">Tier</button>
-            <button data-value="chapter-recv">Chapter Received</button>
-            <button data-value="chapter-changed">Chapter Changed</button>
-            <button data-value="name">Name</button>
+      <div class="search-meta">
+        <div class="sort-controls">
+          <label for="sortSelect">Sort by</label>
+          <select id="sortSelect">
+            <option value="rank">Rank</option>
+            <option value="tier">Tier</option>
+            <option value="chapter-recv">Chapter received</option>
+            <option value="chapter-changed">Chapter changed</option>
+            <option value="name">Name</option>
+          </select>
+          <button id="sortBtn" type="button" aria-label="Descending order. Switch to ascending" title="Descending order. Switch to ascending">↓</button>
         </div>
-    </div>
-
-      <button id="sortBtn">↓</button>
+      </div>
     </div>
 
     <div class="slider-wrap">
@@ -57,6 +59,12 @@
         <input type="number" id="chapter-input" min="0" max="2300" step="1" aria-label="Chapter number">
       </div>
     </div>
+  </div>
+
+  <p id="searchResults" class="search-results" role="status" aria-live="polite"></p>
+  <p id="searchError" class="search-error" role="alert" hidden></p>
+  <div id="searchEmpty" class="search-empty" hidden>
+    <strong id="searchEmptyTitle">No matching memories</strong>
   </div>
 
   <div>
@@ -82,6 +90,7 @@
         <button class="tab active" data-target="color">Color</button>
         <button class="tab" data-target="glint">glint</button>
         <button class="tab" data-target="general">general</button>
+        <button class="tab" data-target="search">Search</button>
       </div>
 
       <div class="content">
@@ -193,6 +202,29 @@
           </div>
         </div>
 
+        <div id="section-search" class="section">
+          <h2>Search</h2>
+          <label class="search-case-option" for="searchCaseSensitive">
+            <input id="searchCaseSensitive" type="checkbox"> Case sensitive
+          </label>
+          <div class="search-modifier-row">
+            <label class="search-case-option" for="searchFuzzy">
+              <input id="searchFuzzy" type="checkbox" aria-describedby="searchFuzzyDescription"> Fuzzy
+            </label>
+            <span id="searchFuzzyDescription">Allow one character typo.</span>
+          </div>
+          <label class="search-mode-label" for="searchMatchMode">Matching mode</label>
+          <select id="searchMatchMode">
+            <option value="contains">Contains</option>
+            <option value="equals">Equals</option>
+            <option value="startsWith">Starts with</option>
+            <option value="endsWith">Ends with</option>
+            <option value="notContains">Does not contain</option>
+            <option value="wildcard">Wildcard</option>
+            <option value="regex">Regular expression (regex)</option>
+          </select>
+        </div>
+
         <div id="section-general" class="section">
           <!--<p style="font-size: 11px;color:#474545">work in progress (doesn't work yet)</p>-->
           <h2>General</h2>
@@ -208,7 +240,6 @@
   <div id="infoPanel"></div>
   <p id="dataStatus" role="status"></p>
 
-  <script src="data.js?v=1"></script>
-  <script src="script.js?v=7"></script>
+  <script src="script.js?v=12"></script>
 </body>
 </html>

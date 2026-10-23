@@ -12,12 +12,23 @@ python -m http.server 8765 --bind 127.0.0.1
 ```
 
 On Windows, `py` can be used instead of `python`. Open `http://127.0.0.1:8765/`.
-Deploy [data.js](./data.js) alongside [index.html](./index.html), [script.js](./script.js),
-[style.css](./style.css), and [memories.json](./memories.json). No build step is needed.
+Deploy [index.html](./index.html), [script.js](./script.js), [style.css](./style.css),
+and [memories.json](./memories.json). All JavaScript, including the inline regex worker,
+is contained in [script.js](./script.js). No build step is needed.
+
+Search behavior is configured under **Settings → Search**. Case sensitivity and the
+matching mode are saved locally, with invalid saved values restored to defaults.
+Fuzzy is an optional modifier for contains, equals, starts with, ends with, and does
+not contain. It allows one insertion, deletion, replacement, or adjacent character
+swap while preserving the chosen mode's boundaries. With case sensitivity enabled,
+a difference in case counts as a character difference. Wildcard and regex retain
+their pattern rules; the fuzzy preference is remembered when switching back to text modes.
+Regex patterns run
+in a worker with a 1.5-second time limit, so slow expressions do not freeze the UI.
 
 ## Data and settings recovery
 
-[data.js](./data.js) validates JSON once when it loads. Console warnings identify the
+[script.js](./script.js) validates JSON once when it loads. Console warnings identify the
 memory index/name, history entry, and invalid or missing field.
 
 - Required memory fields: `name`, `rank`, `tier`, and `ChangeHistory`.

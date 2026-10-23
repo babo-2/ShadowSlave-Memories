@@ -15,19 +15,21 @@ body::-webkit-scrollbar {
 }
 
 .controls {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  margin-top: 15px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr);
+  align-items: start;
+  gap: 24px;
+  margin: 15px 0 12px;
+  padding: 20px;
+  border: 1px solid #303036;
+  border-radius: 16px;
+  background: #18181c;
 }
 
 .searchControls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    width: 100%;
-    padding: 8px;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
 }
 
 .grid {
@@ -38,10 +40,12 @@ body::-webkit-scrollbar {
     padding-left: 8px;
     max-height: 500px;
     transition: max-height 0.5s ease;
+    overflow: visible;
 }
 
 .grid.folded {
   max-height:0px !important;
+  overflow: hidden;
 }
 
 .item {
@@ -171,16 +175,20 @@ body::-webkit-scrollbar {
 }
 
 .search-wrap {
-  max-width: 360px;
+  position: relative;
+  flex: 1;
+  min-width: 0;
 }
 
 .search-wrap input {
   width: 100%;
-  padding: 12px 14px;
-  font-size: 15px;
+  box-sizing: border-box;
+  height: 46px;
+  padding-left: 10px;
+  font-size: 16px;
   color: #fff;
 
-  background: rgba(255, 255, 255, 0.06);
+  background: #111114;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
 
@@ -192,7 +200,7 @@ body::-webkit-scrollbar {
 }
 
 .search-wrap input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: #96969f;
 }
 
 .search-wrap input:hover {
@@ -207,15 +215,19 @@ body::-webkit-scrollbar {
 }
 
 .dropdown {
-  margin-left: 40px;
+  margin-left: 0;
   position: relative;
-  max-width: 360px;
+  flex-shrink: 0;
   font-family: system-ui, sans-serif;
 }
 
 .dropdown-btn {
-  width: 100%;
-  padding: 13px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 10px 12px;
+  white-space: nowrap;
 
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -229,31 +241,39 @@ body::-webkit-scrollbar {
 }
 
 .dropdown-menu{
-  z-index: 3;
-  width: fit-content;
+  z-index: 4;
+  box-sizing: border-box;
+  width: 310px;
+  max-width: calc(100vw - 64px);
+  max-height: min(440px, 70vh);
+  overflow-y: auto;
   position: absolute;
-  top: 110%;
-  left: 0;
+  top: 100%;
+  left: auto;
   right: 0;
 
   display: none;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 
-  padding: 10px;
-  margin-top: 6px;
+  padding: 16px;
+  margin-top: 8px;
 
-  background: rgba(20, 20, 20, 0.9);
+  background: #222227;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
 
-  backdrop-filter: blur(1px);
+  box-shadow: 0 16px 40px #0008;
 }
 
 .dropdown-menu label {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-height: 40px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 14px;
 
   color: #fff;
   cursor: pointer;
@@ -263,64 +283,17 @@ body::-webkit-scrollbar {
   display: flex;
 }
 
-.dropdown-select {
-    position: relative;
-}
-
-.dropdown-select-button {
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
-.dropdown-select-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 100%;
-    z-index: 10;
-    padding: 0px;
-    margin-top: 6px;
-
-    background: rgba(20, 20, 20, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 12px;
-
-    backdrop-filter: blur(1px);
-}
-
-.dropdown-select.open .dropdown-select-menu {
-    display: block;
-}
-
-.dropdown-select-menu button {
-    display: block;
-    width: 100%;
-    padding: 8px 12px;
-    border: 0;
-    text-align: left;
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0);
-}
-
 .slider-wrap {
-  margin-left: auto;
-  margin-right: 5%;
-  width: 40%;
-  padding: 12px;
-  border-radius: 12px;
-
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-
-  backdrop-filter: blur(10px);
+  min-width: 0;
+  padding: 0 0 0 24px;
+  border-left: 1px solid #303036;
   color: #fff;
   font-family: system-ui, sans-serif;
 }
 
 #chapterLabel {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-weight: 500;
   opacity: 0.9;
 }
@@ -333,12 +306,15 @@ body::-webkit-scrollbar {
 
 #chapter {
   flex: 1;
+  min-width: 0;
   accent-color: #ffffff;
 }
 
 #chapter-input {
-  width: 80px;
-  padding: 6px 8px;
+  box-sizing: border-box;
+  width: 96px;
+  height: 46px;
+  padding: 8px;
 
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.15);
@@ -594,6 +570,220 @@ input[type="color"] {
 
 .searchRow {
   display: flex;
+  gap: 10px;
+}
+
+.search-label,
+#chapterLabel {
+  color: #d4d4dc;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.search-icon {
+  position: absolute;
+  top: 13px;
+  left: 14px;
+  width: 20px;
+  height: 20px;
+  color: #96969f;
+  pointer-events: none;
+}
+
+.search-wrap input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.clear-search {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  color: #bcbcc7;
+  font-size: 23px;
+}
+
+.field-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: #ffffff12;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dropdown.open .dropdown-btn {
+  border-color: #a59bc3;
+  background: #aaa0ce16;
+}
+
+.dropdown-menu label:hover,
+.dropdown-menu label:has(input:checked) {
+  background: #ffffff09;
+}
+
+.dropdown-menu input {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: #b7a8e1;
+}
+
+.search-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #aaaab6;
+  font-size: 12px;
+}
+
+#sortSelect,
+#sortBtn {
+  height: 40px;
+  box-sizing: border-box;
+  border: 1px solid #3a3a43;
+  border-radius: 8px;
+  background: #222227;
+  color: #e8e8ed;
+}
+
+#sortSelect {
+  max-width: 150px;
+  padding: 0 8px;
+  font: inherit;
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+#sortBtn {
+  width: 40px;
+  padding: 0;
+  font-size: 20px;
+}
+
+.controls :is(button, input, select):focus-visible {
+  outline: 2px solid #b7a8e1;
+  outline-offset: 3px;
+}
+
+.search-results {
+  margin: 0 8px;
+  color: #aaaab6;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.search-error {
+  margin: 10px 8px;
+  color: #ffb7b7;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.search-case-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+.search-case-option input {
+  accent-color: #b7a8e1;
+}
+
+.search-modifier-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-modifier-row label {
+  flex-shrink: 0;
+}
+
+#searchFuzzyDescription {
+  color: #bcbcc7;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.search-mode-label {
+  display: block;
+  margin: 20px 0 8px;
+}
+
+#searchMatchMode {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid #4a4a54;
+  border-radius: 8px;
+  background: #222227;
+  color: #eee;
+  color-scheme: dark;
+  font-size: 16px;
+}
+
+.search-setting-note,
+.search-mode-help dd {
+  margin: 8px 0 16px;
+  color: #bcbcc7;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.search-mode-help dt {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#section-search code {
+  color: #dfd6f6;
+  overflow-wrap: anywhere;
+}
+
+.content {
+  min-width: 0;
+}
+
+#section-search :is(input, select):focus-visible {
+  outline: 2px solid #b7a8e1;
+  outline-offset: 3px;
+}
+
+.search-empty {
+  padding: 40px 20px;
+  margin: 24px 0;
+  border: 1px dashed #3a3a43;
+  border-radius: 12px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .controls {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .slider-wrap {
+    border-left: 0;
+    border-top: 1px solid #303036;
+    padding: 16px 0 0;
+  }
 }
 
 #infoPanel {
@@ -631,25 +821,26 @@ input[type="color"] {
     display: block;
   }
 
-  /* Controls: stack search row, sort row and chapter slider */
+  /* Full-width search, then compact options and sorting on the same row. */
   .controls {
-    flex-direction: column;
-    align-items: stretch;
     margin: 8px 0;
+    padding: 14px;
   }
 
   .searchControls {
+    display: flex;
     flex-wrap: wrap;
-    padding: 0 0 8px;
+    align-items: center;
+    gap: 10px;
   }
 
   .searchRow {
-    flex: 1 1 100%;
-    gap: 8px;
+    display: contents;
   }
 
+  .search-label,
   .search-wrap {
-    flex: 1;
+    flex: 1 1 100%;
     min-width: 0;
     max-width: none;
   }
@@ -672,20 +863,58 @@ input[type="color"] {
     white-space: nowrap;
   }
 
-  /* Right-align so the menu can't run off the screen edge */
+  /* The options button sits on the left beneath the full-width search field. */
   .dropdown-menu {
-    left: auto;
-    right: 0;
+    left: 0;
+    right: auto;
   }
 
   .slider-wrap {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: center;
     width: auto;
     margin: 0;
     box-sizing: border-box;
   }
 
+  #sortSelect {
+    font-size: 16px;
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    max-width: 190px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 4px;
+  }
+
+  #chapterLabel {
+    margin: 0;
+  }
+
+  .search-meta {
+    display: contents;
+  }
+
+  .sort-controls {
+    margin-left: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: flex-end;
+  }
+
+  #sortBtn {
+    flex-shrink: 0;
+  }
+
+  .sort-controls label {
+    display: none;
+  }
+
   .grid {
-    padding-left: 0;
+    padding-left: 2px;
   }
 
   .item-name {
@@ -740,4 +969,11 @@ input[type="color"] {
   input[type="color"] {
     margin-right: 10%;
   }
+}
+
+@media (max-width: 380px) {
+  .dropdown-btn .field-count {
+    display: none;
+  }
+
 }
