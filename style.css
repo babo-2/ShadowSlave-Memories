@@ -34,21 +34,18 @@ body::-webkit-scrollbar {
 
 .grid {
     display: grid;
-    overflow: hidden;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(120px, 100%), 1fr));
     gap: 10px;
     padding-left: 8px;
-    max-height: 500px;
-    transition: max-height 0.5s ease;
     overflow: visible;
 }
 
 .grid.folded {
-  max-height:0px !important;
-  overflow: hidden;
+  display: none;
 }
 
 .item {
+    box-sizing: border-box;
     height: 120px;
     border-radius: 10px;
     display: flex;
@@ -116,11 +113,82 @@ body::-webkit-scrollbar {
 .rank-Supreme { background: #ff01c8; }
 .rank-Sacred { background: #0400f3; }
 .rank-Divine { background: #f39c12; }
-.rank-\?{ background: rgba(20,20,20,0.5); border: 2px dashed #7f8c8d;}
+.rank-\?{ background: rgba(20,20,20,0.5); }
+
+#borderBy,
+.border-field select,
+.border-field input[type="number"] {
+  min-height: 40px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid #4a4a54;
+  border-radius: 8px;
+  background: #222227;
+  color: #eee;
+  color-scheme: dark;
+  font: inherit;
+}
+
+#borderOptions {
+  display: grid;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.border-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(65px, 80px);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  transition: opacity 0.15s ease;
+}
+
+.border-field.border-none {
+  opacity: 0.65;
+}
+
+.border-field legend {
+  padding: 0 6px;
+  font-size: 14px;
+}
+
+.border-field label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  min-width: 0;
+}
+
+.border-field input[type="color"] {
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.border-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#section-border :is(input, select, button):focus-visible {
+  outline: 2px solid #b7a8e1;
+  outline-offset: 3px;
+}
 
 #infoPanel {
-    position: fixed;
+    position: absolute;
+    box-sizing: border-box;
     width: 260px;
+    max-width: calc(100vw - 20px);
+    overflow-wrap: anywhere;
     background: rgba(0,0,0,0.5);
     border: 1px solid #333;
     border-radius: 10px;
@@ -379,6 +447,7 @@ button:hover {
 }
 
 .sidebar {
+  overscroll-behavior: contain;
   width: 160px;
   background: #2a2a2a;
   display: flex;
@@ -399,6 +468,8 @@ button:hover {
 }
 
 .content {
+  overscroll-behavior: contain;
+  min-height: 0;
   flex: 1;
   padding: 20px;
   position: relative;
@@ -651,24 +722,35 @@ input[type="color"] {
 
 #sortSelect,
 #sortBtn {
-  height: 40px;
+  height: 44px;
   box-sizing: border-box;
   border: 1px solid #3a3a43;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #222227;
   color: #e8e8ed;
 }
 
 #sortSelect {
-  max-width: 150px;
-  padding: 0 8px;
-  font: inherit;
+  width: 200px;
+  max-width: 100%;
+  padding: 0 38px 0 14px;
+  font: 14px Arial, sans-serif;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23bcbcc7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
   cursor: pointer;
   color-scheme: dark;
 }
 
+#sortSelect:hover {
+  border-color: #666071;
+  background-color: #2a2a31;
+}
+
 #sortBtn {
-  width: 40px;
+  width: 44px;
   padding: 0;
   font-size: 20px;
 }
@@ -710,11 +792,17 @@ input[type="color"] {
   gap: 12px;
 }
 
+.generalSection {
+  display: grid;
+  gap: 12px;
+}
+
 .search-modifier-row label {
   flex-shrink: 0;
 }
 
-#searchFuzzyDescription {
+#searchFuzzyDescription,
+#searchWildcardDescription {
   color: #bcbcc7;
   font-size: 12px;
   line-height: 1.4;
@@ -881,13 +969,12 @@ input[type="color"] {
   #sortSelect {
     font-size: 16px;
     flex: 1 1 0;
-    width: 0;
+    width: auto;
     min-width: 0;
-    max-width: 190px;
+    max-width: none;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    padding: 0 4px;
   }
 
   #chapterLabel {
@@ -900,7 +987,7 @@ input[type="color"] {
 
   .sort-controls {
     margin-left: auto;
-    flex: 1 1 0;
+    flex: 1 1 230px;
     min-width: 0;
     justify-content: flex-end;
   }
@@ -922,18 +1009,8 @@ input[type="color"] {
     overflow-wrap: anywhere;
   }
 
-  /* Info panel becomes a bottom sheet.
-     !important overrides the inline left/top/max-height that script.js sets for desktop. */
+  /* Keep the panel anchored in the document on small screens too. */
   #infoPanel {
-    left: 0 !important;
-    right: 0 !important;
-    top: auto !important;
-    bottom: 0;
-    width: auto;
-    box-sizing: border-box;
-    max-height: 55vh !important;
-    max-height: 55dvh !important;
-    border-radius: 16px 16px 0 0;
     background: rgba(15, 15, 16, 0.96);
   }
 

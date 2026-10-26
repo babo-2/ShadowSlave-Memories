@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sunny's memories</title>
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=16">
   <link rel="icon" href="data:,">
   <meta name="google-site-verification" content="MkeefcRBU_Tw7sqT4G-G0O-QwxG1KsKYbzltt_3SdCA" />
   <meta name="description" content="Sunny’s memories in Shadow Slave by chapter">
@@ -88,6 +88,7 @@
     <div class="settingsPanel">
       <div class="sidebar">
         <button class="tab active" data-target="color">Color</button>
+        <button class="tab" data-target="border">Border</button>
         <button class="tab" data-target="glint">glint</button>
         <button class="tab" data-target="general">general</button>
         <button class="tab" data-target="search">Search</button>
@@ -138,7 +139,7 @@
               <label for="colorPicker">?: </label>
               <input onchange="ApplyBackgroundColors('rank-?', this.value)" type="color" name="colorPicker" value="#141414">
             </div>
-            <button style="margin-top: 5%;" onclick="resetColors('rank')">reset</button>
+            <button style="margin-top: 5%;" onclick="resetColors('rank')">Reset rank to default</button>
             <button onclick="UpdateColors('tier')">Use colors from tier</button>
           </div>
           <div id="colorBySection-tier" class="colorBySection">
@@ -174,8 +175,22 @@
               <label for="colorPicker">?: </label>
               <input onchange="ApplyBackgroundColors('tier-?', this.value)" type="color" name="colorPicker" value="#141414">
             </div>
-            <button style="margin-top: 5%;" onclick="resetColors('tier')">reset</button>
+            <button style="margin-top: 5%;" onclick="resetColors('tier')">Reset tier to default</button>
             <button onclick="UpdateColors('rank')">Use colors from rank</button>
+          </div>
+        </div>
+
+        <div id="section-border" class="section">
+          <h2>Border</h2>
+          <label for="borderBy">Border by</label>
+          <select id="borderBy">
+            <option value="rank">Rank</option>
+            <option value="tier">Tier</option>
+          </select>
+          <div id="borderOptions"></div>
+          <div class="border-actions">
+            <button id="resetBorders" type="button">Reset rank to default</button>
+            <button id="copyBorders" type="button">Use borders from tier</button>
           </div>
         </div>
 
@@ -208,6 +223,12 @@
             <input id="searchCaseSensitive" type="checkbox"> Case sensitive
           </label>
           <div class="search-modifier-row">
+            <label class="search-case-option" for="searchWildcard">
+              <input id="searchWildcard" type="checkbox" aria-describedby="searchWildcardDescription"> Wildcard
+            </label>
+            <span id="searchWildcardDescription">Use * for any text and ? for one character.</span>
+          </div>
+          <div class="search-modifier-row">
             <label class="search-case-option" for="searchFuzzy">
               <input id="searchFuzzy" type="checkbox" aria-describedby="searchFuzzyDescription"> Fuzzy
             </label>
@@ -220,7 +241,6 @@
             <option value="startsWith">Starts with</option>
             <option value="endsWith">Ends with</option>
             <option value="notContains">Does not contain</option>
-            <option value="wildcard">Wildcard</option>
             <option value="regex">Regular expression (regex)</option>
           </select>
         </div>
@@ -230,6 +250,7 @@
           <h2>General</h2>
           <div class="generalSection">
             <label><input type="checkbox" id="historyToggle" checked> Show memory history</label>
+            <label><input type="checkbox" id="groupGivenAwayToggle"> Show given away memories under Destroyed</label>
           </div>
         </div>
 
@@ -240,6 +261,6 @@
   <div id="infoPanel"></div>
   <p id="dataStatus" role="status"></p>
 
-  <script src="script.js?v=12"></script>
+  <script src="script.js?v=17"></script>
 </body>
 </html>

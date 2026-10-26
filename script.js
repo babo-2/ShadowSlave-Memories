@@ -155,7 +155,34 @@ function validateMemories(data) {
 }
 
 // Search matching
-const SEARCH_MODES = ["contains", "equals", "startsWith", "endsWith", "notContains", "wildcard", "regex"];
+const SEARCH_MODES = ["contains", "equals", "startsWith", "endsWith", "notContains", "regex"];
+
+// Glob matching with the same one-edit allowance as the fuzzy text modifier.
+function matchesFuzzyWildcard(text, pattern) {
+  let previousPrevious;
+  let previous = Array.from({length: text.length + 1}, (_, index) => index);
+  for (let token = 0; token < pattern.length; token++) {
+    const character = pattern[token];
+    const current = [character === "*" ? previous[0] : previous[0] + 1];
+    for (let index = 1; index <= text.length; index++) {
+      if (character === "*") {
+        current[index] = Math.min(previous[index], current[index - 1]);
+      } else {
+        const matches = character === "?" || character === text[index - 1];
+        current[index] = Math.min(previous[index - 1] + (matches ? 0 : 1),
+          previous[index] + 1, current[index - 1] + 1);
+        if (token > 0 && index > 1 && pattern[token - 1] !== "*" &&
+            (character === "?" || character === text[index - 2]) &&
+            (pattern[token - 1] === "?" || pattern[token - 1] === text[index - 1])) {
+          current[index] = Math.min(current[index], previousPrevious[index - 2] + 1);
+        }
+      }
+    }
+    previousPrevious = previous;
+    previous = current;
+  }
+  return previous[text.length] <= 1;
+}
 
 // Full-field glob matching without converting user wildcards into a regular expression.
 function matchesWildcard(text, pattern) {
@@ -225,17 +252,22 @@ function createSearchMatcher(query, settings) {
   if (!raw) return () => true;
   const normalize = value => settings.caseSensitive ? value : value.toLowerCase();
   const needle = normalize(raw);
+  let pattern = needle;
+  if (["contains", "notContains", "endsWith"].includes(settings.mode)) pattern = "*" + pattern;
+  if (["contains", "notContains", "startsWith"].includes(settings.mode)) pattern += "*";
   const expression = settings.mode === "regex" ? new RegExp(raw, settings.caseSensitive ? "" : "i") : null;
   const match = value => {
     const text = normalize(value);
-    if (settings.fuzzy && !["wildcard", "regex"].includes(settings.mode)) {
+    if (settings.wildcard && settings.mode !== "regex") {
+      return settings.fuzzy ? matchesFuzzyWildcard(text, pattern) : matchesWildcard(text, pattern);
+    }
+    if (settings.fuzzy && settings.mode !== "regex") {
       return matchesFuzzyText(text, needle, settings.mode);
     }
     switch (settings.mode) {
       case "equals": return text === needle;
       case "startsWith": return text.startsWith(needle);
       case "endsWith": return text.endsWith(needle);
-      case "wildcard": return matchesWildcard(text, needle);
       case "regex": return expression.test(value);
       default: return text.includes(needle);
     }
@@ -283,6 +315,15 @@ let items = [];
 const tiers = MEMORY_TIERS;
 const ranks = MEMORY_RANKS;
 const defaultColors = ["#7f8c8d", "#27ae60", "#2980b9", "#8e44ad", "#ff01c8", "#0400f3", "#f39c12", "#141414"];
+const BORDER_STYLES = ["none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"];
+const borderGroups = {
+  rank: ["Dormant", "Awakened", "Ascended", "Transcendent", "Supreme", "Sacred", "Divine", "?"],
+  tier: ["I", "II", "III", "IV", "V", "VI", "VII", "?"]
+};
+const defaultBorders = Object.fromEntries(Object.entries(borderGroups).map(([group, values]) =>
+  [group, Object.fromEntries(values.map(value => [value, {
+    style: value === "?" ? "dashed" : "none", color: "#7f8c8d", width: 2
+  }]))]));
 let storageWarningShown = false;
 let historyCache = {data: null, chapter: null, groups: null};
 
@@ -291,8 +332,9 @@ let currentChapter = 500;
 //load items from storage
 let glintRanks=loadList("glintRanks", ['Divine']);
 let glintTiers=loadList("glintTiers", ['VII']);
-let generalSettings=loadList("generalSettings", {"history": true});
-let searchSettings = loadList("searchSettings", {mode: "contains", caseSensitive: false, fuzzy: false});
+let generalSettings=loadList("generalSettings", {history: true, groupGivenAway: false});
+let searchSettings = loadList("searchSettings", {mode: "contains", caseSensitive: false, fuzzy: false, wildcard: false});
+let borderSettings = loadList("borderSettings", {by: "rank", ...defaultBorders});
 let activeSearchWorker = null;
 let searchTimeout = null;
 
@@ -361,6 +403,16 @@ let asc=false;
 
 settingsBtn.onclick = () => SettingsOverlay.classList.add("open");
 closeBtn.onclick = () => SettingsOverlay.classList.remove("open");
+
+const settingsPanel = SettingsOverlay.querySelector(".settingsPanel");
+const settingsContent = settingsPanel.querySelector(".content");
+settingsPanel.addEventListener("wheel", event => {
+  if (event.ctrlKey || !event.deltaY) return;
+  const insideContent = settingsContent.contains(event.target);
+  const atTop = settingsContent.scrollTop <= 0 && event.deltaY < 0;
+  const atBottom = settingsContent.scrollTop + settingsContent.clientHeight >= settingsContent.scrollHeight - 1 && event.deltaY > 0;
+  if (!insideContent || atTop || atBottom) event.preventDefault();
+}, {passive: false});
 
 function loadBackgroundColors(){//general load() function
   let colorBy = loadColorBy();
@@ -434,7 +486,7 @@ function ApplyBackgroundColors(type, color, persist = true){
 }
 
 function resetColors(type){
-  if (!confirm("Are you sure you want to reset the memory background colors?")) return;
+  if (!confirm(`Reset all ${type} colors to default?`)) return;
   const original = defaultColors;
   document.getElementById("colorBySection-"+type).querySelectorAll("input").forEach((input, i) => {
     input.value=original[i]
@@ -459,6 +511,94 @@ tabs.forEach(tab => {
   };
 });
 
+const borderByInput = document.getElementById("borderBy");
+borderByInput.value = borderSettings.by;
+function applyMemoryBorders() {
+  const group = borderSettings.by;
+  for (const value of borderGroups[group]) {
+    const border = borderSettings[group][value];
+    for (const item of document.getElementsByClassName(`${group}-${value}`)) {
+      item.style.border = `${border.width}px ${border.style} ${border.color}`;
+    }
+  }
+}
+function saveBorderSettings() {
+  writeStorage("borderSettings", JSON.stringify(borderSettings));
+  applyMemoryBorders();
+}
+function renderBorderControls() {
+  const group = borderSettings.by;
+  const options = document.getElementById("borderOptions");
+  options.replaceChildren();
+  for (const value of borderGroups[group]) {
+    const border = borderSettings[group][value];
+    const field = document.createElement("fieldset");
+    field.className = "border-field";
+    const updatePreview = () => {
+      field.style.border = `${border.width}px ${border.style} ${border.color}`;
+      field.classList.toggle("border-none", border.style === "none");
+    };
+    updatePreview();
+    const legend = document.createElement("legend");
+    legend.textContent = value;
+    field.appendChild(legend);
+    for (const [key, title] of [["style", "Style"], ["color", "Color"], ["width", "Width (px)"]]) {
+      const label = document.createElement("label");
+      label.textContent = title;
+      const input = document.createElement(key === "style" ? "select" : "input");
+      input.id = `border-${group}-${value === "?" ? "unknown" : value}-${key}`;
+      if (key === "style") {
+        for (const style of BORDER_STYLES) {
+          const option = document.createElement("option");
+          option.value = style;
+          option.textContent = style[0].toUpperCase() + style.slice(1);
+          input.appendChild(option);
+        }
+      } else {
+        input.type = key === "color" ? "color" : "number";
+        if (key === "width") { input.min = "0"; input.max = "20"; input.step = "1"; }
+      }
+      input.value = border[key];
+      input.setAttribute("aria-label", `${group} ${value} border ${title.toLowerCase()}`);
+      input.addEventListener("change", () => {
+        if (!input.checkValidity() || (key === "width" && input.value === "")) {
+          input.value = border[key];
+          return;
+        }
+        border[key] = key === "width" ? Number(input.value) : input.value;
+        updatePreview();
+        saveBorderSettings();
+      });
+      label.appendChild(input);
+      field.appendChild(label);
+    }
+    options.appendChild(field);
+  }
+  document.getElementById("resetBorders").textContent = `Reset ${group} to default`;
+  document.getElementById("copyBorders").textContent = `Use borders from ${group === "rank" ? "tier" : "rank"}`;
+}
+borderByInput.addEventListener("change", () => {
+  borderSettings.by = borderByInput.value;
+  renderBorderControls();
+  saveBorderSettings();
+});
+document.getElementById("resetBorders").addEventListener("click", () => {
+  if (!confirm(`Reset all ${borderSettings.by} borders to default?`)) return;
+  borderSettings[borderSettings.by] = structuredClone(defaultBorders[borderSettings.by]);
+  renderBorderControls();
+  saveBorderSettings();
+});
+document.getElementById("copyBorders").addEventListener("click", () => {
+  const target = borderSettings.by;
+  const source = target === "rank" ? "tier" : "rank";
+  borderGroups[target].forEach((value, index) => {
+    borderSettings[target][value] = structuredClone(borderSettings[source][borderGroups[source][index]]);
+  });
+  renderBorderControls();
+  saveBorderSettings();
+});
+renderBorderControls();
+
 const historyToggle = document.getElementById("historyToggle");
 historyToggle.checked=generalSettings.history
 historyToggle.dispatchEvent(new Event("change"));
@@ -471,22 +611,33 @@ historyToggle.addEventListener("change", () => {
         hideHistoryTooltip();
     }
 });
+const groupGivenAwayToggle = document.getElementById("groupGivenAwayToggle");
+groupGivenAwayToggle.checked = generalSettings.groupGivenAway;
+groupGivenAwayToggle.addEventListener("change", () => {
+  generalSettings.groupGivenAway = groupGivenAwayToggle.checked;
+  save_general_settings();
+  renderItems();
+});
 
 //SEARCH
 const matchModeInput = document.getElementById("searchMatchMode");
 const caseSensitiveInput = document.getElementById("searchCaseSensitive");
 const fuzzyInput = document.getElementById("searchFuzzy");
+const wildcardInput = document.getElementById("searchWildcard");
 matchModeInput.value = searchSettings.mode;
 caseSensitiveInput.checked = searchSettings.caseSensitive;
 fuzzyInput.checked = searchSettings.fuzzy;
+wildcardInput.checked = searchSettings.wildcard;
 function updateFuzzyControl() {
-  fuzzyInput.disabled = ["wildcard", "regex"].includes(searchSettings.mode);
+  fuzzyInput.disabled = searchSettings.mode === "regex";
+  wildcardInput.disabled = searchSettings.mode === "regex";
   document.getElementById("searchFuzzyDescription").textContent = fuzzyInput.disabled
     ? "Available with text matching modes." : "Allow one character typo.";
 }
 updateFuzzyControl();
 function saveSearchSettings() {
-  searchSettings = {mode: matchModeInput.value, caseSensitive: caseSensitiveInput.checked, fuzzy: fuzzyInput.checked};
+  searchSettings = {mode: matchModeInput.value, caseSensitive: caseSensitiveInput.checked,
+    fuzzy: fuzzyInput.checked, wildcard: wildcardInput.checked};
   updateFuzzyControl();
   writeStorage("searchSettings", JSON.stringify(searchSettings));
   renderItems();
@@ -494,6 +645,7 @@ function saveSearchSettings() {
 matchModeInput.addEventListener("change", saveSearchSettings);
 caseSensitiveInput.addEventListener("change", saveSearchSettings);
 fuzzyInput.addEventListener("change", saveSearchSettings);
+wildcardInput.addEventListener("change", saveSearchSettings);
 syncChapterControls(currentChapter);
 ascbtn.addEventListener("click", () => {
   asc = !asc;
@@ -628,12 +780,28 @@ function loadList(key, defaults) {
   try { value = JSON.parse(raw); }
   catch { value = undefined; }
   let normalized = structuredClone(defaults);
-  if (key === "generalSettings" && isRecord(value)) {
+  if (key === "borderSettings" && isRecord(value)) {
+    normalized.by = ["rank", "tier"].includes(value.by) ? value.by : defaults.by;
+    for (const [group, values] of Object.entries(borderGroups)) {
+      for (const category of values) {
+        const border = value[group]?.[category];
+        if (!isRecord(border)) continue;
+        const target = normalized[group][category];
+        if (BORDER_STYLES.includes(border.style)) target.style = border.style;
+        if (typeof border.color === "string" && /^#[0-9a-f]{6}$/i.test(border.color)) target.color = border.color;
+        if (Number.isInteger(border.width) && border.width >= 0 && border.width <= 20) target.width = border.width;
+      }
+    }
+  } else if (key === "generalSettings" && isRecord(value)) {
     normalized.history = typeof value.history === "boolean" ? value.history : defaults.history;
+    normalized.groupGivenAway = typeof value.groupGivenAway === "boolean" ? value.groupGivenAway : defaults.groupGivenAway;
   } else if (key === "searchSettings" && isRecord(value)) {
     normalized.mode = SEARCH_MODES.includes(value.mode) ? value.mode : defaults.mode;
     normalized.caseSensitive = typeof value.caseSensitive === "boolean" ? value.caseSensitive : defaults.caseSensitive;
     normalized.fuzzy = value.mode === "fuzzy" || (typeof value.fuzzy === "boolean" ? value.fuzzy : defaults.fuzzy);
+    // Preserve the full-field semantics of the former Wildcard matching mode.
+    normalized.wildcard = value.mode === "wildcard" || (typeof value.wildcard === "boolean" ? value.wildcard : defaults.wildcard);
+    if (value.mode === "wildcard") normalized.mode = "equals";
   } else if (key === "glintRanks" || key === "glintTiers") {
     const allowed = key === "glintRanks" ? ranks : tiers;
     if (Array.isArray(value)) {
@@ -758,6 +926,10 @@ function setSearchError(message) {
 }
 
 function renderFilteredItems([owned, destroyed, given_away], query, available) {
+  if (generalSettings.groupGivenAway) {
+    destroyed = [...destroyed, ...given_away];
+    given_away = [];
+  }
   updateSearchSummary(query, owned.length + destroyed.length + given_away.length, available);
   let [OwnedItems, DestroyedItems, given_away_items] = sortItems(owned, destroyed, given_away, currentChapter);
   //OWNED
@@ -765,7 +937,6 @@ function renderFilteredItems([owned, destroyed, given_away], query, available) {
   OwnedItems.forEach(item => {
     grid_owned.appendChild(createItem(item));
   });
-  requestAnimationFrame(() => {grid_owned.style.maxHeight = (10+grid_owned.scrollHeight) + "px";});//fixes bug that scrollHeight is 0 sometimes
   grid_owned.parentElement.style.display = OwnedItems.length ? "" : "none";
 
   //DESTROYED
@@ -773,7 +944,6 @@ function renderFilteredItems([owned, destroyed, given_away], query, available) {
   DestroyedItems.forEach(item => {
     grid_destroyed.appendChild(createItem(item))
   })
-  requestAnimationFrame(() => {grid_destroyed.style.maxHeight = (10+grid_destroyed.scrollHeight) + "px";});
   grid_destroyed.parentElement.style.display = DestroyedItems.length ? "" : "none";
 
   //GIVEN AWAY
@@ -781,10 +951,10 @@ function renderFilteredItems([owned, destroyed, given_away], query, available) {
   given_away_items.forEach(item => {
   grid_given_away.appendChild(createItem(item))
   })
-  requestAnimationFrame(() => {grid_given_away.style.maxHeight = (10+grid_given_away.scrollHeight) + "px";});
   grid_given_away.parentElement.style.display = given_away_items.length ? "" : "none";
   
   loadBackgroundColors()
+  applyMemoryBorders();
 }
 function createItem(item) {
     const div = document.createElement("div");
@@ -1481,10 +1651,11 @@ function showPanel(item, x, y) {
     if (x + panelRect.width > screenW) {
         x = (x - offset) - panelRect.width - offset;
     }
-    panel.style.left = `${x}px`;
-    panel.style.top = `${y}px`;
-    const availableHeight = (window.innerHeight - y) - 50;
-    panel.style.maxHeight = `${availableHeight}px`;
+    x = Math.max(10, Math.min(x, screenW - panelRect.width - 10));
+    y = Math.max(10, Math.min(y, window.innerHeight - 130));
+    panel.style.maxHeight = `${Math.max(100, window.innerHeight - y - 10)}px`;
+    panel.style.left = `${x + window.scrollX}px`;
+    panel.style.top = `${y + window.scrollY}px`;
 }
 function hidePanel() {
   if (!isclicked){

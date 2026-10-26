@@ -1,66 +1,86 @@
-
 ## Website
 
 🌐 Hosted on: https://shadowslavememories.neocities.org/
 
+info: since I have only read up until chapter 2300, the memory list only includes memories up to this chapter. 
+
+## Settings
+
+Appearance and search preferences,
+general settings, and your selected chapter are saved in your browser. They apply
+to that browser and device; clearing site data removes them.
+
+You can scroll the page while the pointer is outside the settings panel. Scrolling
+inside the panel stays within settings, including at the top and bottom.
+
+### Color
+
+Choose **rank** or **tier** to color the memory cards, then pick a background color
+for each category. Each group keeps its own palette.
+
+**Reset rank to default** or **Reset tier to default** restores the selected palette
+after confirmation. **Use colors from tier/rank** copies the other palette to the
+selected group, matching the corresponding levels, and also asks for confirmation.
+
+### Border
+
+Choose **Rank** or **Tier** independently of the background color setting. Each
+category has its own border style, color, and width from **0 to 20px**. Select
+**None** to hide a border.
+
+Each settings fieldset previews its selected border. When the style is None, the
+fieldset and its controls appear slightly translucent and remain editable.
+
+By default, borders are based on **rank**. All categories in both groups use None,
+except **?**, which uses a **dashed, 2px, #7f8c8d** border.
+
+**Reset rank/tier to default** restores the selected group after confirmation.
+**Use borders from tier/rank** copies the other group’s border settings to the
+corresponding levels in the selected group.
+
+### Glint
+
+Enable the animated shine for individual ranks or tiers. A memory glints when
+either its rank or its tier is selected. **Divine** and **VII** are enabled by default.
+
+### General
+
+- **Show memory history:** display the history indicators in memory details.
+  Hover over or click an indicator to inspect changes up to the selected chapter.
+  This is enabled by default.
+- **Show given away memories under Destroyed:** combine those memories into the
+  Destroyed section. This changes their display grouping and preserves their history.
+  Disable it to restore the separate Given Away section. It is off by default.
+
+### Search
+
+Choose a matching mode and optional modifiers. The default is **Contains**, with
+all modifiers off.
+
+| Matching mode | Behavior |
+| --- | --- |
+| Contains | Match text anywhere in a selected field. |
+| Equals | Match the entire field. |
+| Starts with | Match the beginning of a field. |
+| Ends with | Match the end of a field. |
+| Does not contain | Exclude memories with a match in any selected field. |
+| Regular expression (regex) | Search using a regular expression. |
+
+- **Case sensitive:** distinguish uppercase and lowercase letters.
+- **Wildcard:** use `*` for any text, including no characters, and `?` for one
+  character. The matching mode still controls the boundaries. For example,
+  `*Shard` with Equals matches a whole field ending in “Shard”.
+- **Fuzzy:** allow one character insertion, deletion, replacement, or adjacent
+  letter swap. This can be combined with Wildcard and Case sensitive. With both
+  Fuzzy and Case sensitive enabled, a case difference counts as a character edit.
+
+Wildcard and Fuzzy are disabled in regex mode, with their choices remembered when
+you return to a text mode. Invalid or overly slow regex patterns display an error.
+
 ## Running locally
 
-Serve this directory with any static HTTP server, for example:
+Serve this directory with a static HTTP server, for example:
 
 ```sh
 python -m http.server 8765 --bind 127.0.0.1
 ```
-
-On Windows, `py` can be used instead of `python`. Open `http://127.0.0.1:8765/`.
-Deploy [index.html](./index.html), [script.js](./script.js), [style.css](./style.css),
-and [memories.json](./memories.json). All JavaScript, including the inline regex worker,
-is contained in [script.js](./script.js). No build step is needed.
-
-Search behavior is configured under **Settings → Search**. Case sensitivity and the
-matching mode are saved locally, with invalid saved values restored to defaults.
-Fuzzy is an optional modifier for contains, equals, starts with, ends with, and does
-not contain. It allows one insertion, deletion, replacement, or adjacent character
-swap while preserving the chosen mode's boundaries. With case sensitivity enabled,
-a difference in case counts as a character difference. Wildcard and regex retain
-their pattern rules; the fuzzy preference is remembered when switching back to text modes.
-Regex patterns run
-in a worker with a 1.5-second time limit, so slow expressions do not freeze the UI.
-
-## Data and settings recovery
-
-[script.js](./script.js) validates JSON once when it loads. Console warnings identify the
-memory index/name, history entry, and invalid or missing field.
-
-- Required memory fields: `name`, `rank`, `tier`, and `ChangeHistory`.
-  Missing/invalid names become `Unknown memory`; rank/tier become `?`.
-  Missing/invalid history becomes an empty array, so ownership is not invented.
-- Optional description/type default to empty text; enchantments default to `[]`.
-  Enchantments require a name, defaulting to `Unknown enchantment`;
-  an unknown `passive` value becomes `null`.
-- History entries require a nonnegative integer chapter and an operation type
-  (or a `changes` array). Updates/additions also require an allowed field and a value.
-  Unsafe operations are skipped with a warning, preserving other valid events.
-  An explicitly empty operation type is treated as an informational note.
-- Events are sorted by chapter, preserving their order within the same chapter.
-  Nested operations inherit their parent chapter and description.
-- Invalid JSON syntax or a failed HTTP request displays a reload message. An invalid
-  top-level JSON structure falls back to an empty collection with a console warning.
-- Saved settings are checked for malformed JSON, incorrect types, and invalid values.
-  Valid preferences are retained where possible; invalid values are repaired and saved.
-  Unavailable browser storage does not stop browsing, but preferences may not persist.
-
-History snapshots are reconstructed only when the committed chapter or loaded dataset
-changes. Search, sorting, and appearance changes reuse the current snapshot. Slider
-dragging previews the number; releasing it commits the chapter. Both chapter controls
-clamp to the supported range, save the choice, and accept chapter zero.
-
-## Regression checks
-
-With the local server running, open `http://127.0.0.1:8765/tests/`.
-The [browser test suite](./tests/regression.js) needs no dependencies and exercises the
-actual application in an iframe, including history replay, caching, malformed data,
-settings recovery, chapter controls, colors, and load failures.
-
-Use a dedicated local server origin for tests: they temporarily replace that origin's
-saved settings, then restore them when the suite finishes. Wait for the pass/fail summary
-before closing the test page. The [tests folder](./tests/) is not needed for deployment.
